@@ -2,64 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZerzBan X - لوحة التحقق الأمنية</title>
+    <title>ZerzBan X - لوحة التحقق</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
-        body { background-color: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
-        
-        /* حاوية الأمان (بدل الأحمر، جعلناها خضراء متوهجة) */
-        .security-container {
-            background-color: #0a0a0a;
-            border: 2px solid #00ff41;
-            border-radius: 20px;
-            padding: 30px;
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
-        }
-
-        .shield-icon { font-size: 3rem; color: #00ff41; margin-bottom: 15px; animation: pulse 2s infinite; }
-        h1 { color: #00ff41; font-size: 1.6rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0, 255, 65, 0.5); }
-
-        .check-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0, 255, 65, 0.05); margin: 12px 0; padding: 12px 15px;
-            border-radius: 10px; border-right: 3px solid #00ff41;
-        }
-
-        #gen-panel { display: none; margin-top: 20px; }
-        .key-box { background: #000; padding: 15px; border: 1px dashed #00ff41; color: #fff; font-size: 1.2rem; margin: 15px 0; border-radius: 8px; }
-        
-        button { width: 100%; padding: 12px; background: #00ff41; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; color: #000; }
-        
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        .box { background: #0a0a0a; border: 2px solid #00ff41; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
+        .icon { font-size: 3rem; color: #00ff41; margin-bottom: 15px; }
+        .check { background: rgba(0, 255, 65, 0.1); margin: 10px 0; padding: 10px; border-radius: 10px; border-right: 3px solid #00ff41; }
+        button { width: 100%; padding: 12px; background: #00ff41; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        #gen-panel { display: none; }
+        .copy-btn { background: #000; color: #00ff41; border: 1px solid #00ff41; }
     </style>
 </head>
 <body>
 
-    <div class="security-container" id="gate">
-        <div class="shield-icon"><i class="fas fa-shield-alt"></i></div>
-        <h1>ZerzBan Security</h1>
+    <div class="box" id="gate">
+        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <h1>  Welcome to ZerzBan X Cheats </h1>
+        <p style="font-size: 0.9rem; margin-bottom: 15px;">نظام توليد المفاتيح الأكثر أماناً</p>
+        <div class="check">فحص الأمان: <span id="timer">10</span> ثوانٍ</div>
         
-        <div class="check-item"><span>فحص الرابط المختصر</span> <span>✅</span></div>
-        <div class="check-item"><span>تشفير الجلسة</span> <span id="timer">10</span></div>
-
         <div id="gen-panel">
-            <a href="https://t.me/ZerzBanXCheats" style="color:#00ff41; text-decoration:none; font-size: 0.8rem;">قناة التلجرام</a>
-            <div class="key-box" id="key-display">---</div>
-            <button onclick="generateKey()">توليد مفتاح</button>
+            <div id="key-display" style="margin:15px; font-size:1.2rem; color:#00ff41;">---</div>
+            <button id="genBtn" onclick="generateKey()">توليد مفتاح</button>
+            <button class="copy-btn" onclick="copyKey()">نسخ المفتاح</button>
+            <p id="cooldown-msg" style="color:red; font-size:0.8rem; margin-top:10px;"></p>
         </div>
     </div>
 
     <script>
-        // 1. نظام الحماية (مقتبس من منطق صاحبك: لا يعمل إلا إذا كان verified=true)
+        // 1. نظام الحماية (Token + Time)
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('verified') !== "true") {
+        if (urlParams.get('verified') === "true") {
+            sessionStorage.setItem("access_token", Date.now() + 60000);
+        }
+        const token = sessionStorage.getItem("access_token");
+        if (!token || Date.now() > parseInt(token)) {
             window.location.href = "https://short-jambo.ink/DevZerzGetKey";
         }
 
@@ -68,24 +48,45 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 3. نظام العد التنازلي وفتح البوابة (مثل كود صاحبك)
+        // 3. نظام 24 ساعة (LocalStorage)
+        function checkCooldown() {
+            const lastGen = localStorage.getItem("lastGenTime");
+            if (lastGen && (Date.now() - lastGen < 86400000)) {
+                document.getElementById("genBtn").disabled = true;
+                document.getElementById("cooldown-msg").innerText = "لقد قمت بتوليد مفتاح بالفعل. انتظر 24 ساعة.";
+                return false;
+            }
+            return true;
+        }
+
+        // 4. عداد الـ 10 ثوانٍ
         let count = 10;
-        const timerInt = setInterval(() => {
+        const timer = setInterval(() => {
             count--;
             document.getElementById('timer').innerText = count;
             if(count <= 0) {
-                clearInterval(timerInt);
-                document.getElementById('timer').innerText = "تم";
+                clearInterval(timer);
                 document.getElementById('gen-panel').style.display = 'block';
+                checkCooldown();
             }
         }, 1000);
 
-        // 4. دالة التوليد والإرسال
+        // 5. توليد ونسخ
         function generateKey() {
+            if(!checkCooldown()) return;
             const random = Math.floor(100000 + Math.random() * 900000);
             const key = "ZerzBan-X-" + random;
             db.ref('keys/' + random).set({ key: key, timestamp: Date.now() });
+            localStorage.setItem("lastGenTime", Date.now());
             document.getElementById("key-display").innerText = key;
+            document.getElementById("genBtn").disabled = true;
+            document.getElementById("cooldown-msg").innerText = "تم التوليد بنجاح!";
+        }
+
+        function copyKey() {
+            const key = document.getElementById("key-display").innerText;
+            navigator.clipboard.writeText(key);
+            alert("تم نسخ المفتاح!");
         }
     </script>
 </body>
