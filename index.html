@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZerzBan X Cheats - الأمان</title>
+    <title>ZerzBan X Cheats / الأمان</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -24,7 +24,6 @@
             position: relative;
         }
 
-        /* شبكة خلفية متحركة */
         body::before {
             content: "";
             position: absolute;
@@ -88,7 +87,6 @@
             opacity: 0.9;
         }
 
-        /* شريط التقدم */
         .progress-track {
             width: 100%;
             height: 6px;
@@ -227,9 +225,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ==================== المتغيرات العامة ====================
+    // ==================== المتغيرات ====================
     const SHORTLINK = "https://short-jambo.ink/DevZerzGetKey";
-    const STORAGE_KEY = "zb_verified"; // مفتاح sessionStorage
+    const VERIFIED_KEY = "zb_verified";
+    const REDIRECTED_KEY = "zb_redirected";
 
     // ==================== دوال الواجهة ====================
     function setStep(id, text, icon) {
@@ -250,6 +249,10 @@
         return 'ZerzBan-X-Cheats-' + random;
     }
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     // ==================== المنطق الرئيسي ====================
     async function run() {
         const statusEl = document.getElementById('statusMessage');
@@ -258,34 +261,48 @@
         const keyBox = document.getElementById('key-box');
         const keyText = document.getElementById('key-text');
 
-        // --- آلية الحماية من الحلقة اللانهائية ---
-        const referrer = document.referrer;
-        const alreadyVerified = sessionStorage.getItem(STORAGE_KEY) === 'true';
-
-        // إذا لم يكن قادمًا من الرابط المختصر ولم يتم التحقق منه سابقًا
-        if (!referrer.includes('short-jambo.ink/DevZerzGetKey') && !alreadyVerified) {
-            // نخزن علامة أننا سنقوم بالتوجيه الآن
-            sessionStorage.setItem(STORAGE_KEY, 'pending');
-            window.location.href = SHORTLINK;
-            return; // نتوقف هنا
+        // --- آلية منع الحلقة باستخدام sessionStorage فقط ---
+        // إذا كان المستخدم قد تم التحقق منه مسبقاً في هذه الجلسة، نكمل مباشرة.
+        if (sessionStorage.getItem(VERIFIED_KEY) === 'true') {
+            // تم التحقق سابقاً
+            statusEl.textContent = 'تم التحقق مسبقاً. جاري تجهيز المفتاح...';
+            await startKeyGeneration();
+            return;
         }
 
-        // إذا وصلنا إلى هنا، إما أن المستخدم قادم من الرابط المختصر، أو كان pending والآن عاد (فحصنا sessionStorage)
-        if (sessionStorage.getItem(STORAGE_KEY) === 'pending') {
-            // الآن نعتبره مُتحققًا
-            sessionStorage.setItem(STORAGE_KEY, 'true');
+        // إذا كان المستخدم قد أعيد توجيهه للتو (أي عاد من الرابط المختصر) نضبط verified
+        if (sessionStorage.getItem(REDIRECTED_KEY) === 'true') {
+            sessionStorage.removeItem(REDIRECTED_KEY);
+            sessionStorage.setItem(VERIFIED_KEY, 'true');
+            statusEl.textContent = 'تم التحقق من المصدر. جاري التجهيز...';
+            await startKeyGeneration();
+            return;
         }
 
-        // الخطوات الوهمية
+        // إذا لم يكن هناك أي علامة، نوجهه إلى الرابط المختصر
+        sessionStorage.setItem(REDIRECTED_KEY, 'true');
+        window.location.href = SHORTLINK;
+    }
+
+    async function startKeyGeneration() {
+        const statusEl = document.getElementById('statusMessage');
+        const countdownEl = document.getElementById('countdownArea');
+        const timerEl = document.getElementById('timer');
+        const keyBox = document.getElementById('key-box');
+        const keyText = document.getElementById('key-text');
+
+        // الخطوات الوهمية مع شريط التقدم
         statusEl.textContent = 'جاري التحقق من المصدر...';
         setProgress(10);
         await sleep(1200);
         setStep('step1', '✅ تم التحقق من المصدر', '✅');
         setProgress(30);
+
         statusEl.textContent = 'فحص الاتصال...';
         await sleep(1000);
         setStep('step2', '✅ لا يوجد اتصال مشبوه', '✅');
         setProgress(60);
+
         statusEl.textContent = 'تأمين القناة...';
         await sleep(800);
         setStep('step3', '✅ تم تأمين القناة', '✅');
@@ -307,7 +324,7 @@
         countdownEl.style.display = 'none';
         statusEl.textContent = 'تم بنجاح!';
 
-        // توليد المفتاح
+        // توليد المفتاح وحفظه في Firebase
         const fullKey = generateKey();
         try {
             await db.ref('keys/' + fullKey).set({
@@ -321,10 +338,6 @@
             keyText.textContent = 'خطأ في الحفظ، حاول مجدداً';
             console.error(e);
         }
-    }
-
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     // البدء عند التحميل
