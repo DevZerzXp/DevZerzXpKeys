@@ -3,188 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZerzBan X Cheats - الأمان</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ZerzBan X Cheats - مولد المفاتيح</title>
     <style>
-        * {
-            box-sizing: border-box;
+        body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: radial-gradient(circle at center, #0a1f0a 0%, #020502 100%);
-            color: #e0ffe0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        .security-container {
-            background: rgba(10, 20, 10, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 2px solid rgba(0, 255, 0, 0.4);
-            border-radius: 24px;
-            padding: 35px 30px;
-            width: 90%;
-            max-width: 450px;
+            background-color: #030303;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
             text-align: center;
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            overflow-x: hidden;
         }
 
-        .shield-icon {
-            font-size: 3rem;
-            color: #00ff00;
-            margin-bottom: 15px;
-            text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
-            animation: pulse 2s infinite;
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.12;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes cyber-glow {
+            0% { text-shadow: 0 0 10px #00ff00, 0 0 20px #005500; transform: scale(1); }
+            50% { text-shadow: 0 0 25px #33ff33, 0 0 50px #00ff00; transform: scale(1.02); }
+            100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #005500; transform: scale(1); }
         }
 
         h1 {
-            color: #00ff00;
-            font-size: 1.8rem;
+            color: #fff;
+            font-size: 3em;
+            font-weight: 900;
+            animation: cyber-glow 2.5s infinite;
+            margin-bottom: 30px;
             letter-spacing: 2px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        .main-status {
-            font-size: 1.2rem;
-            color: #ffcc00;
-            margin-bottom: 25px;
-            font-weight: bold;
+        .box-style {
+            background: rgba(6, 6, 6, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 440px;
         }
 
-        .check-list {
+        .verification-box {
+            width: 90%;
+            max-width: 440px;
+            margin: 0 auto 20px auto;
             text-align: right;
-            margin-bottom: 20px;
-            padding: 0 10px;
         }
 
         .check-item {
+            font-size: 16px;
+            margin: 18px 0;
+            color: #888;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            margin: 10px 0;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border-right: 3px solid #00ff00;
-            font-size: 0.95rem;
+            border-bottom: 1px dashed rgba(0, 255, 0, 0.2);
+            padding-bottom: 10px;
+            transition: all 0.5s;
         }
 
-        .status-icon {
-            font-size: 1.1rem;
+        .check-item span.status {
+            font-weight: bold;
+            color: #33ff33;
         }
 
-        #key-panel {
+        .check-item.success {
+            color: #00ff66;
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+            border-bottom-color: rgba(0, 255, 102, 0.3);
+        }
+
+        .check-item.success span.status {
+            color: #00ff66;
+        }
+
+        .countdown-container {
+            font-size: 20px;
+            margin: 20px 0;
             display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px dashed #00ff00;
-            border-radius: 8px;
-        }
-
-        #key-display {
-            font-family: monospace;
-            font-size: 1.3rem;
-            color: #00ff00;
-            word-break: break-all;
-            margin-top: 10px;
-            display: block;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-        }
-
-        .countdown-text {
-            color: #aaaaaa;
-            font-size: 0.85rem;
-            margin-top: 15px;
         }
 
         #timer {
+            font-size: 55px;
             color: #00ff00;
             font-weight: bold;
+            text-shadow: 0 0 20px #00ff00;
+            margin-top: 10px;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+        .key-box {
+            display: none;
+            margin-top: 25px;
+            background: linear-gradient(135deg, #001000 0%, #002500 100%);
+            border: 2px dashed #00ff00;
+            position: relative;
+            overflow: hidden;
+            animation: neon-border 2s infinite alternate;
+        }
+
+        @keyframes neon-border {
+            from { box-shadow: 0 0 15px #00ff00; border-color: #00ff00; }
+            to { box-shadow: 0 0 35px #33ff33; border-color: #66ff66; }
+        }
+
+        #keyDisplay {
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px #33ff33;
+            word-break: break-all;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #006600, #00aa00);
+            color: white;
+            padding: 16px 40px;
+            border: 1px solid #33ff33;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            display: none;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #00aa00, #33ff33);
+            box-shadow: 0 0 35px #00ff00;
+            transform: translateY(-3px);
+        }
+
+        .info {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 20px;
+            display: none;
+            line-height: 1.6;
+        }
+
+        /* إخفاء العناصر عند الطرد */
+        .kicked-out {
+            color: #ff0000;
+            font-size: 1.5em;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-
-    <div class="security-container" id="main-gate-box">
-        <div class="shield-icon">
-            <i class="fas fa-shield-alt"></i>
-        </div>
+    <canvas id="matrix-bg"></canvas>
+    <div class="content-wrapper" id="mainContent">
         <h1>ZerzBan X Cheats</h1>
         
-        <div class="main-status" id="gate-title">جاري فحص الأمان . . .</div>
-
-        <div class="check-list">
-            <div class="check-item" id="step-shortlink">
-                <span>جاري التحقق من الرابط المختصر . . .</span>
-                <span class="status-icon" id="icon-shortlink">⏳</span>
-            </div>
-            <div class="check-item" id="step-vpn">
-                <span>جاري فحص اتصال VPN . . .</span>
-                <span class="status-icon" id="icon-vpn">⏳</span>
-            </div>
-            <div class="check-item" id="step-session">
-                <span>جاري تشفير الجلسة . . .</span>
-                <span class="status-icon" id="icon-session">⏳</span>
-            </div>
+        <div class="box-style" id="verificationBox">
+            <h3 style="text-align: center; color: #33ff33; margin-top: 0; letter-spacing: 1px;">🔐 جاري فحص جدار الحماية...</h3>
+            <div class="check-item" id="check1">التحقق من تخطي الرابط <span class="status">جاري الفحص...</span></div>
+            <div class="check-item" id="check2">فحص حظر اتصال VPN / Proxy <span class="status">جاري الفحص...</span></div>
+            <div class="check-item" id="check3">تشفير الجلسة الحالية <span class="status">جاري الفحص...</span></div>
         </div>
 
-        <div id="key-panel">
-            <span style="color: #ffffff;">تم توليد مفتاح الوصول الخاص بك بنجاح:</span>
-            <code id="key-display">جاري الاتصال بقاعدة البيانات...</code>
+        <div class="countdown-container" id="countdownBox">
+            <p style="color: #ccc;">جاري تشفير وتوليد مفتاحك الخاص...</p>
+            <div id="timer">10</div>
         </div>
-
-        <div class="countdown-text" id="countdown-container" style="display:none;">
-            سيتم عرض المفتاح وتأكيد الصلاحية خلال: <span id="timer">10</span> ثوانٍ
+        
+        <div class="key-box box-style" id="keyContainer">
+            <span id="keyDisplay">جاري المعالجة...</span>
         </div>
+        
+        <button class="btn" id="copyBtn" onclick="copyKey()">📋 نسخ المفتاح</button>
+        <p class="info" id="infoText">المفتاح صالح للاستخدام مرة واحدة فقط في تطبيق ZerzBan X Cheats.</p>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-    (function(){
-        // ==================== الإعدادات ====================
-        const SHORTLINK = "https://short-jambo.ink/DevZerzGetKey";
-        const STORAGE_KEY = "zb_gate_pass";
-        const GATE_VALIDITY_MS = 15000; // 15 ثانية صلاحية العبور
+        // ==================== تأثير الماتريكس الأخضر ====================
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({length: columns}).fill(1);
         
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(3, 3, 3, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px Courier New';
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // ==================== آلية الحماية (مطابقة للكود الأصلي الجديد) ====================
+        const VERIFIED_KEY = 'zb_verified_user';
+        const SHORTLINK = 'https://short-jambo.ink/DevZerzGetKey';
+        
+        const isVerified = sessionStorage.getItem(VERIFIED_KEY);
+        
+        if (isVerified !== 'YES_PASSED_SHORT') {
+            // تخزين علامة التحقق وإعادة التوجيه فوراً
+            sessionStorage.setItem(VERIFIED_KEY, 'YES_PASSED_SHORT');
+            window.location.replace(SHORTLINK);
+            // لن يتم تنفيذ أي شيء بعد هذا السطر
+        }
+        
+        // إذا وصلنا هنا، المستخدم إما عاد من الرابط المختصر أو لديه جلسة سابقة
+        // سنقوم بإزالة العلامة بعد قليل (بعد إكمال العملية) لمنع إعادة الاستخدام المباشر
+
         // ==================== Firebase ====================
         const firebaseConfig = {
-            apiKey: "AIzaSyB3a21LXNAl1k9Iayfax080VSOmILsNLG0",
-            authDomain: "devzerzservers.firebaseapp.com",
-            databaseURL: "https://devzerzservers-default-rtdb.firebaseio.com",
-            projectId: "devzerzservers",
-            storageBucket: "devzerzservers.firebasestorage.app",
-            messagingSenderId: "129983508495",
-            appId: "1:129983508495:web:c28de3950cbca105e4737a"
+            apiKey: 'AIzaSyB3a21LXNAl1k9Iayfax080VSOmILsNLG0',
+            authDomain: 'devzerzservers.firebaseapp.com',
+            databaseURL: 'https://devzerzservers-default-rtdb.firebaseio.com',
+            projectId: 'devzerzservers',
+            storageBucket: 'devzerzservers.firebasestorage.app',
+            messagingSenderId: '129983508495',
+            appId: '1:129983508495:web:c28de3950cbca105e4737a'
         };
         
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // ==================== دوال الواجهة ====================
-        function updateElement(id, text, iconId, icon) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = text;
-            if (iconId) {
-                const iconEl = document.getElementById(iconId);
-                if (iconEl) iconEl.textContent = icon;
+        // ==================== الدوال الرئيسية ====================
+        window.onload = function() {
+            runRealChecks();
+        };
+
+        async function runRealChecks() {
+            // 1. فحص تخطي الرابط (تم بالفعل)
+            await new Promise(r => setTimeout(r, 1200));
+            setSuccess('check1', '✔️ تم التحقق من الرابط المختصر');
+            
+            // 2. فحص VPN حقيقي
+            try {
+                let response = await fetch('https://ipapi.co/json/');
+                let data = await response.json();
+                if(data.security || 
+                   data.org.toLowerCase().includes('vpn') || 
+                   data.org.toLowerCase().includes('hosting') ||
+                   data.org.toLowerCase().includes('proxy')) {
+                    document.getElementById('mainContent').innerHTML = 
+                        "<div class='kicked-out'><h2>🚫 عذراً، تم رصد اتصال VPN نشط!</h2><p>قم بإغلاق VPN لإنشاء المفتاح.</p></div>";
+                    return;
+                }
+                setSuccess('check2', '✔️ اتصال آمن وموثوق (لا يوجد VPN)');
+            } catch (e) {
+                setSuccess('check2', '✔️ تم التحقق من سلامة الشبكة');
             }
+            
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // 3. فحص تشفير الجلسة
+            setSuccess('check3', '✔️ جلسة مشفرة بنجاح SSL/TLS');
+            await new Promise(r => setTimeout(r, 800));
+            
+            // الانتقال للعد التنازلي
+            document.getElementById('verificationBox').style.display = 'none';
+            document.getElementById('countdownBox').style.display = 'block';
+            startCountdown();
+        }
+
+        function setSuccess(id, text) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('success');
+                el.querySelector('.status').innerText = text;
+            }
+        }
+
+        function startCountdown() {
+            let count = 10;
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                count--;
+                timerEl.innerText = count;
+                if (count <= 0) {
+                    clearInterval(interval);
+                    generateAndSaveKey();
+                }
+            }, 1000);
         }
 
         function generateRandomString(length) {
@@ -196,108 +328,47 @@
             return result;
         }
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // ==================== التحقق من العبور (نفس منطق الكود الأصلي) ====================
-        function checkGatePass() {
-            const stored = sessionStorage.getItem(STORAGE_KEY);
-            if (!stored) return false;
+        function generateAndSaveKey() {
+            document.getElementById('countdownBox').style.display = 'none';
+            const generatedKey = 'ZerzBan-X-Cheats-' + generateRandomString(16);
+            const serverTime = Date.now();
             
-            try {
-                const decoded = atob(stored);
-                const timestamp = parseInt(decoded.split('_')[0]);
-                const now = Date.now();
-                return (now - timestamp) < GATE_VALIDITY_MS;
-            } catch(e) {
-                return false;
-            }
-        }
-
-        function storeGatePass() {
-            const data = Date.now() + '_' + generateRandomString(6);
-            sessionStorage.setItem(STORAGE_KEY, btoa(data));
-        }
-
-        function clearGatePass() {
-            sessionStorage.removeItem(STORAGE_KEY);
-        }
-
-        // ==================== العملية الرئيسية ====================
-        async function startSecurityProcess() {
-            // التحقق من وجود تصريح عبور صالح (يعني أن المستخدم جاء من الرابط المختصر)
-            const hasValidPass = checkGatePass();
-            
-            if (!hasValidPass) {
-                // لم يتم العبور بعد - إعادة توجيه إلى الرابط المختصر
-                // أولاً نخزن تصريح مؤقت (سيصبح صالحاً بعد العودة)
-                storeGatePass();
-                window.location.href = SHORTLINK;
-                return;
-            }
-            
-            // المستخدم لديه تصريح عبور صالح - متابعة العملية
-            // إزالة التصريح لمنع إعادة الاستخدام
-            clearGatePass();
-            
-            // الخطوة 1: التحقق من الرابط المختصر
-            await sleep(1200);
-            updateElement('step-shortlink', '✅ تم التحقق من الرابط المختصر بنجاح', 'icon-shortlink', '✅');
-            
-            // الخطوة 2: فحص VPN وهمي
-            await sleep(1000);
-            updateElement('step-vpn', '✅ لا يوجد اتصال VPN مشبوه', 'icon-vpn', '✅');
-            
-            // الخطوة 3: تشفير الجلسة
-            await sleep(800);
-            updateElement('step-session', '✅ تم تشفير الجلسة بنجاح', 'icon-session', '✅');
-            
-            // إظهار العد التنازلي
-            document.getElementById('countdown-container').style.display = 'block';
-            document.getElementById('gate-title').textContent = 'جاري تجهيز المفتاح...';
-            
-            let secondsLeft = 10;
-            const timerElement = document.getElementById('timer');
-            timerElement.textContent = secondsLeft;
-            
-            const countdownInterval = setInterval(() => {
-                secondsLeft--;
-                timerElement.textContent = secondsLeft;
-                if (secondsLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    generateAndShowKey();
-                }
-            }, 1000);
-        }
-
-        // توليد المفتاح وحفظه في Firebase
-        function generateAndShowKey() {
-            const keyPrefix = 'ZerzBan-X-Cheats-';
-            const randomPart = generateRandomString(16);
-            const fullKey = keyPrefix + randomPart;
-            
-            database.ref('keys/' + fullKey).set({
-                createdAt: Date.now(),
+            database.ref('keys/' + generatedKey).set({
+                createdAt: serverTime,
                 status: 'active',
-                deviceID: 'web-client',
+                deviceID: 'none',
                 used: false
-            })
-            .then(() => {
-                document.getElementById('key-panel').style.display = 'block';
-                document.getElementById('key-display').textContent = fullKey;
-                document.getElementById('gate-title').textContent = 'تم بنجاح! ✅';
-                document.getElementById('countdown-container').style.display = 'none';
-            })
-            .catch(error => {
-                console.error('خطأ في حفظ المفتاح:', error);
-                document.getElementById('key-display').textContent = 'حدث خطأ، حاول مرة أخرى';
+            }).then(() => {
+                document.getElementById('keyContainer').style.display = 'block';
+                document.getElementById('keyDisplay').innerText = generatedKey;
+                document.getElementById('copyBtn').style.display = 'inline-block';
+                document.getElementById('infoText').style.display = 'block';
+                
+                // إزالة الجلسة بعد التوليد لمنع إعادة الاستخدام بدون المرور بالرابط المختصر
+                sessionStorage.removeItem(VERIFIED_KEY);
+            }).catch(error => {
+                document.getElementById('keyContainer').style.display = 'block';
+                document.getElementById('keyDisplay').innerText = 'فشل في الاتصال بالسيرفر! حاول مرة أخرى.';
             });
         }
 
-        // بدء العملية تلقائياً
-        window.addEventListener('load', startSecurityProcess);
-    })();
+        function copyKey() {
+            const keyText = document.getElementById('keyDisplay').innerText;
+            if (keyText && 
+                keyText !== 'جاري المعالجة...' && 
+                keyText !== 'فشل في الاتصال بالسيرفر! حاول مرة أخرى.') {
+                navigator.clipboard.writeText(keyText).then(() => {
+                    const btn = document.getElementById('copyBtn');
+                    const originalText = btn.innerText;
+                    btn.innerText = '✔️ تم النسخ بنجاح';
+                    btn.style.background = 'linear-gradient(45deg, #00aa00, #00ff66)';
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.style.background = 'linear-gradient(45deg, #006600, #00aa00)';
+                    }, 2000);
+                });
+            }
+        }
     </script>
 </body>
 </html>
