@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZerzBan Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #050505;
+            color: #00ff41;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #121212;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 { font-size: 24px; margin-bottom: 25px; color: #fff; text-shadow: 0 0 10px #00ff41; }
+        .key-display {
+            background: #000;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #00ff41;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #00ff41;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00ff41;
+            border: none;
+            color: #000;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+        button:hover { box-shadow: 0 0 15px #00ff41; }
+        .copy-btn { background: #333; color: #fff; border: 1px solid #555; }
+        .copy-btn:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ZERZBAN PANEL</h1>
+        <div id="keyBox" class="key-display">اضغط توليد</div>
+        <button onclick="generateKey()">توليد مفتاح جديد</button>
+        <button class="copy-btn" onclick="copyKey()">نسخ المفتاح</button>
+    </div>
+
+    <script>
+        function generateKey() {
+            const random = Math.floor(100000 + Math.random() * 900000);
+            const key = "ZerzBan-X-Cheats-" + random;
+            document.getElementById("keyBox").innerText = key;
+        }
+
+        function copyKey() {
+            const text = document.getElementById("keyBox").innerText;
+            navigator.clipboard.writeText(text);
+            alert("تم نسخ المفتاح!");
+        }
+    </script>
+</body>
+</html>
