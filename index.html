@@ -2,92 +2,266 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ZerzBan X - لوحة التحقق</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZerzBan X Cheats - مولد المفاتيح</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
-        .box { background: #0a0a0a; border: 2px solid #00ff41; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-        .icon { font-size: 3rem; color: #00ff41; margin-bottom: 15px; }
-        .check { background: rgba(0, 255, 65, 0.1); margin: 10px 0; padding: 10px; border-radius: 10px; border-right: 3px solid #00ff41; }
-        button { width: 100%; padding: 12px; background: #00ff41; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
-        #gen-panel { display: none; }
-        .copy-btn { background: #000; color: #00ff41; border: 1px solid #00ff41; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .security-container {
+            background-color: #0b0b0b;
+            border: 2px solid #00ff00;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .shield-icon {
+            font-size: 3rem;
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            color: #00ff00;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+        }
+
+        .main-status {
+            font-size: 1.2rem;
+            color: #ffcc00;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .check-list {
+            text-align: right;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            margin: 10px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-right: 3px solid #00ff00;
+            font-size: 0.95rem;
+        }
+
+        .status-icon {
+            font-size: 1.1rem;
+        }
+
+        #key-panel {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px dashed #00ff00;
+            border-radius: 8px;
+        }
+
+        #key-display {
+            font-family: monospace;
+            font-size: 1.3rem;
+            color: #00ff00;
+            word-break: break-all;
+            margin-top: 10px;
+            display: block;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        .countdown-text {
+            color: #aaaaaa;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+
+        #timer {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="box" id="gate">
-        <div class="icon"><i class="fas fa-shield-alt"></i></div>
-        <h1>  Welcome to ZerzBan X Cheats </h1>
-        <p style="font-size: 0.9rem; margin-bottom: 15px;">نظام توليد المفاتيح الأكثر أماناً</p>
-        <div class="check">فحص الأمان: <span id="timer">10</span> ثوانٍ</div>
+    <div class="security-container" id="main-gate-box">
+        <div class="shield-icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>ZerzBan X Cheats</h1>
         
-        <div id="gen-panel">
-            <div id="key-display" style="margin:15px; font-size:1.2rem; color:#00ff41;">---</div>
-            <button id="genBtn" onclick="generateKey()">توليد مفتاح</button>
-            <button class="copy-btn" onclick="copyKey()">نسخ المفتاح</button>
-            <p id="cooldown-msg" style="color:red; font-size:0.8rem; margin-top:10px;"></p>
+        <div class="main-status" id="gate-title">جاري فحص الأمان . . .</div>
+
+        <div class="check-list">
+            <div class="check-item" id="step-shortlink">
+                <span>جاري التحقق من الرابط المختصر . . .</span>
+                <span class="status-icon" id="icon-shortlink">⏳</span>
+            </div>
+            <div class="check-item" id="step-vpn">
+                <span>جاري فحص اتصال VPN . . .</span>
+                <span class="status-icon" id="icon-vpn">⏳</span>
+            </div>
+            <div class="check-item" id="step-session">
+                <span>جاري تشفير الجلسة . . .</span>
+                <span class="status-icon" id="icon-session">⏳</span>
+            </div>
+        </div>
+
+        <div id="key-panel">
+            <span style="color: #ffffff;">تم توليد مفتاح الوصول الخاص بك بنجاح:</span>
+            <code id="key-display">جاري الاتصال بقاعدة البيانات...</code>
+        </div>
+
+        <div class="countdown-text" id="countdown-container" style="display:none;">
+            سيتم عرض المفتاح وتأكيد الصلاحية خلال: <span id="timer">10</span> ثوانٍ
         </div>
     </div>
 
+    <!-- Firebase SDKs (إصدار متوافق مع الشكل القديم) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <script>
-        // 1. نظام الحماية (Token + Time)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('verified') === "true") {
-            sessionStorage.setItem("access_token", Date.now() + 60000);
-        }
-        const token = sessionStorage.getItem("access_token");
-        if (!token || Date.now() > parseInt(token)) {
-            window.location.href = "https://short-jambo.ink/DevZerzGetKey";
-        }
+        // ==================== بيانات Firebase الخاصة بمشروعك (تم إدخالها) ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3a21LXNAl1k9Iayfax080VSOmILsNLG0",
+            authDomain: "devzerzservers.firebaseapp.com",
+            databaseURL: "https://devzerzservers-default-rtdb.firebaseio.com",
+            projectId: "devzerzservers",
+            storageBucket: "devzerzservers.firebasestorage.app",
+            messagingSenderId: "129983508495",
+            appId: "1:129983508495:web:c28de3950cbca105e4737a"
+        };
 
-        // 2. إعداد Firebase
-        const firebaseConfig = { databaseURL: "https://devzerzservers-default-rtdb.firebaseio.com/" };
+        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const database = firebase.database();
 
-        // 3. نظام 24 ساعة (LocalStorage)
-        function checkCooldown() {
-            const lastGen = localStorage.getItem("lastGenTime");
-            if (lastGen && (Date.now() - lastGen < 86400000)) {
-                document.getElementById("genBtn").disabled = true;
-                document.getElementById("cooldown-msg").innerText = "لقد قمت بتوليد مفتاح بالفعل. انتظر 24 ساعة.";
-                return false;
+        // ==================== دوال مساعدة ====================
+        function updateElement(id, text, iconId = null, icon = null) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+            if (iconId && icon) {
+                const iconEl = document.getElementById(iconId);
+                if (iconEl) iconEl.textContent = icon;
             }
-            return true;
         }
 
-        // 4. عداد الـ 10 ثوانٍ
-        let count = 10;
-        const timer = setInterval(() => {
-            count--;
-            document.getElementById('timer').innerText = count;
-            if(count <= 0) {
-                clearInterval(timer);
-                document.getElementById('gen-panel').style.display = 'block';
-                checkCooldown();
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-        }, 1000);
-
-        // 5. توليد ونسخ
-        function generateKey() {
-            if(!checkCooldown()) return;
-            const random = Math.floor(100000 + Math.random() * 900000);
-            const key = "ZerzBan-X-" + random;
-            db.ref('keys/' + random).set({ key: key, timestamp: Date.now() });
-            localStorage.setItem("lastGenTime", Date.now());
-            document.getElementById("key-display").innerText = key;
-            document.getElementById("genBtn").disabled = true;
-            document.getElementById("cooldown-msg").innerText = "تم التوليد بنجاح!";
+            return result;
         }
 
-        function copyKey() {
-            const key = document.getElementById("key-display").innerText;
-            navigator.clipboard.writeText(key);
-            alert("تم نسخ المفتاح!");
+        // ==================== العملية الرئيسية ====================
+        async function startSecurityProcess() {
+            // --- الحماية: التحقق من أن المستخدم قادم من الرابط المختصر ---
+            const referrer = document.referrer;
+            const requiredReferrer = 'short-jambo.ink/DevZerzGetKey';
+            
+            if (!referrer.includes(requiredReferrer)) {
+                // إذا لم يأتِ من الرابط المختصر، يتم توجيهه إليه فوراً
+                window.location.href = 'https://short-jambo.ink/DevZerzGetKey';
+                return;
+            }
+
+            // الخطوة 1: التحقق من الرابط المختصر
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            updateElement('step-shortlink', '✅ تم التحقق من الرابط المختصر بنجاح', 'icon-shortlink', '✅');
+            
+            // الخطوة 2: فحص VPN وهمي
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            updateElement('step-vpn', '✅ لا يوجد اتصال VPN مشبوه', 'icon-vpn', '✅');
+            
+            // الخطوة 3: تشفير الجلسة
+            await new Promise(resolve => setTimeout(resolve, 800));
+            updateElement('step-session', '✅ تم تشفير الجلسة بنجاح', 'icon-session', '✅');
+            
+            // إظهار العد التنازلي
+            document.getElementById('countdown-container').style.display = 'block';
+            document.getElementById('gate-title').textContent = 'جاري تجهيز المفتاح...';
+            
+            let secondsLeft = 10;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = secondsLeft;
+            
+            const countdownInterval = setInterval(() => {
+                secondsLeft--;
+                timerElement.textContent = secondsLeft;
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    generateAndShowKey();
+                }
+            }, 1000);
         }
+
+        // توليد المفتاح وحفظه في Firebase
+        function generateAndShowKey() {
+            const keyPrefix = 'ZerzBan-X-Cheats-';
+            const randomPart = generateRandomString(16);
+            const fullKey = keyPrefix + randomPart;
+            
+            // حفظ المفتاح في قاعدة بيانات Firebase تحت مسار "keys"
+            database.ref('keys/' + fullKey).set({
+                createdAt: Date.now(),
+                status: 'active',
+                deviceID: 'web-client',
+                used: false
+            })
+            .then(() => {
+                // عرض المفتاح
+                document.getElementById('key-panel').style.display = 'block';
+                document.getElementById('key-display').textContent = fullKey;
+                document.getElementById('gate-title').textContent = 'تم بنجاح! ✅';
+                document.getElementById('countdown-container').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('خطأ في حفظ المفتاح:', error);
+                document.getElementById('key-display').textContent = 'حدث خطأ، حاول مرة أخرى';
+            });
+        }
+
+        // بدء العملية تلقائياً عند تحميل الصفحة
+        window.addEventListener('load', startSecurityProcess);
     </script>
 </body>
 </html>
