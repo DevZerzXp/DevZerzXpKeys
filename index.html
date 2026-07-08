@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SX2TEAM - Key Generator</title>
+    <title>SX2TEAM -- Key Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -365,7 +365,7 @@
 
         /**
          * ============================================================
-         *  🔥 CHECK BLACKLIST (منع IP من الحصول على مفتاحين)
+         *  🔥 CHECK BLACKLIST
          * ============================================================
          */
         async function checkBlacklist() {
@@ -428,7 +428,7 @@
 
         /**
          * ============================================================
-         *  🔑 GET TEMP TOKEN (نفس الطريقة القديمة التي كانت تعمل)
+         *  🔑 GET TEMP TOKEN (إرسال المفتاح في Header)
          * ============================================================
          */
         async function getTempToken() {
@@ -467,7 +467,7 @@
         async function startProcess() {
             const blacklistStatus = await checkBlacklist();
             if (blacklistStatus.blacklisted) {
-                showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
+                showMessage('🚫 Your IP has been blacklisted.', 'blacklisted');
                 setButton('Blocked', true, 'fa-ban');
                 setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
                 debugLog('🚫 IP is blacklisted. Access denied.');
@@ -526,7 +526,7 @@
 
         /**
          * ============================================================
-         *  HANDLE RETURN (after link shortener)
+         *  HANDLE RETURN
          * ============================================================
          */
         async function handleReturn() {
@@ -601,6 +601,7 @@
                 debugLog(`📦 Data: ${JSON.stringify(data)}`);
 
                 if (data.success && data.key) {
+                    // ✅ حفظ المفتاح
                     sessionStorage.setItem('generated_key', data.key);
                     sessionStorage.removeItem('temp_token');
                     sessionStorage.removeItem('session_id');
@@ -648,7 +649,7 @@
 
             const blacklistStatus = await checkBlacklist();
             if (blacklistStatus.blacklisted) {
-                showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
+                showMessage('🚫 Your IP has been blacklisted.', 'blacklisted');
                 setButton('Blocked', true, 'fa-ban');
                 setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
                 debugLog('🚫 IP is blacklisted. Access denied.');
