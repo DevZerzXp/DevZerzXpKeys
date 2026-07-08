@@ -6,7 +6,6 @@
     <title>SX2TEAM - Key Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +23,6 @@
             background-image: radial-gradient(ellipse at 50% 0%, rgba(16, 185, 129, 0.06), transparent 60%);
         }
 
-        /* ===== CARD ===== */
         .container {
             max-width: 440px;
             width: 100%;
@@ -40,7 +38,6 @@
             overflow: hidden;
         }
 
-        /* ===== GLOW ===== */
         .container::before {
             content: '';
             position: absolute;
@@ -52,7 +49,6 @@
             pointer-events: none;
         }
 
-        /* ===== LOGO ===== */
         .icon {
             font-size: 56px;
             color: #10b981;
@@ -81,7 +77,6 @@
             font-weight: 600;
         }
 
-        /* ===== STATUS BADGE ===== */
         .status-badge {
             display: inline-block;
             padding: 5px 18px;
@@ -127,7 +122,12 @@
             border-color: rgba(245, 158, 11, 0.08);
         }
 
-        /* ===== BUTTON ===== */
+        .status-badge.cooldown {
+            background: rgba(245, 158, 11, 0.06);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.08);
+        }
+
         .btn-generate {
             width: 100%;
             padding: 18px 24px;
@@ -164,7 +164,6 @@
             margin-right: 8px;
         }
 
-        /* ===== KEY DISPLAY ===== */
         .key-display {
             display: none;
             margin-top: 24px;
@@ -238,7 +237,6 @@
             letter-spacing: 1px;
         }
 
-        /* ===== MESSAGES ===== */
         .message {
             margin-top: 16px;
             padding: 12px 16px;
@@ -276,7 +274,6 @@
             border: 1px solid rgba(245, 158, 11, 0.06);
         }
 
-        /* ===== SPINNER ===== */
         .spinner {
             display: inline-block;
             width: 20px;
@@ -295,7 +292,6 @@
             }
         }
 
-        /* ===== DEBUG ===== */
         .debug-box {
             margin-top: 16px;
             padding: 12px 14px;
@@ -321,7 +317,6 @@
             color: rgba(255, 255, 255, 0.06);
         }
 
-        /* ===== FOOTER ===== */
         .footer {
             margin-top: 28px;
             color: rgba(255, 255, 255, 0.01);
@@ -330,7 +325,14 @@
             text-transform: uppercase;
         }
 
-        /* ===== RESPONSIVE ===== */
+        .cooldown-timer {
+            margin-top: 12px;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 32px 20px;
@@ -355,22 +357,18 @@
 
     <div class="container">
 
-        <!-- ===== LOGO ===== -->
         <span class="icon"><i class="fas fa-key"></i></span>
         <h1>SX2<span>TEAM</span></h1>
         <div class="sub">Key Generator</div>
 
-        <!-- ===== STATUS ===== -->
         <div class="status-badge ready" id="statusBadge">
             <i class="fas fa-shield-halved"></i> Ready
         </div>
 
-        <!-- ===== BUTTON ===== -->
         <button class="btn-generate" id="generateBtn" onclick="startProcess()">
             <i class="fas fa-rocket"></i> GET KEY
         </button>
 
-        <!-- ===== KEY DISPLAY ===== -->
         <div class="key-display" id="keyDisplay">
             <div class="label">🎯 Your Activation Key</div>
             <div class="value" id="keyValue">SX2-TEAM-XXXXXX</div>
@@ -380,20 +378,15 @@
             <div class="key-hint">Use this key in the app to activate your IP</div>
         </div>
 
-        <!-- ===== MESSAGE ===== -->
+        <div class="cooldown-timer" id="cooldownTimer"></div>
+
         <div class="message" id="message"></div>
 
-        <!-- ===== DEBUG ===== -->
         <div class="debug-box" id="debugBox"></div>
 
-        <!-- ===== FOOTER ===== -->
         <div class="footer">SECURE · GREEN · SX2TEAM</div>
 
     </div>
-
-    <!-- ============================================================ -->
-    <!-- ======================== JAVASCRIPT ========================= -->
-    <!-- ============================================================ -->
 
     <script>
         /**
@@ -404,6 +397,7 @@
         const API_URL = 'https://sx2lador.xyz/api/generate.php';
         const API_KEY = 'SX2TEAM-SECRET-2024';
         const SHORT_URL = 'https://short-jambo.ink/Sx2TeamGetKey';
+        const COOLDOWN_HOURS = 24;
 
         /**
          * ============================================================
@@ -417,6 +411,7 @@
         const keyValue = $('keyValue');
         const messageEl = $('message');
         const debugBox = $('debugBox');
+        const cooldownTimer = $('cooldownTimer');
 
         /**
          * ============================================================
@@ -477,7 +472,6 @@
                     }, 2000);
                 })
                 .catch(() => {
-                    // Fallback
                     const textarea = document.createElement('textarea');
                     textarea.value = key;
                     document.body.appendChild(textarea);
@@ -494,17 +488,85 @@
 
         /**
          * ============================================================
+         *  COOLDOWN SYSTEM (24 HOURS)
+         * ============================================================
+         */
+        function getCooldownKey() {
+            return 'cooldown_' + API_KEY;
+        }
+
+        function getCooldownEnd() {
+            const stored = localStorage.getItem(getCooldownKey());
+            if (!stored) return null;
+            return new Date(parseInt(stored));
+        }
+
+        function setCooldown() {
+            const endTime = Date.now() + (COOLDOWN_HOURS * 60 * 60 * 1000);
+            localStorage.setItem(getCooldownKey(), endTime.toString());
+            updateCooldownUI();
+        }
+
+        function isCooldownActive() {
+            const end = getCooldownEnd();
+            if (!end) return false;
+            return Date.now() < end.getTime();
+        }
+
+        function getRemainingTime() {
+            const end = getCooldownEnd();
+            if (!end) return null;
+            const remaining = end.getTime() - Date.now();
+            if (remaining <= 0) {
+                localStorage.removeItem(getCooldownKey());
+                return null;
+            }
+            return remaining;
+        }
+
+        function formatCooldown(ms) {
+            const hours = Math.floor(ms / (60 * 60 * 1000));
+            const minutes = Math.floor((ms % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((ms % (60 * 1000)) / 1000);
+            if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+            if (minutes > 0) return `${minutes}m ${seconds}s`;
+            return `${seconds}s`;
+        }
+
+        function updateCooldownUI() {
+            const remaining = getRemainingTime();
+            if (remaining && remaining > 0) {
+                cooldownTimer.textContent = `⏳ Next key available in: ${formatCooldown(remaining)}`;
+                cooldownTimer.style.display = 'block';
+                setButton('Wait...', true, 'fa-clock');
+                setStatus('<i class="fas fa-clock"></i> Cooldown', 'cooldown');
+                return true;
+            } else {
+                cooldownTimer.style.display = 'none';
+                localStorage.removeItem(getCooldownKey());
+                return false;
+            }
+        }
+
+        /**
+         * ============================================================
          *  MAIN: START PROCESS (GET KEY)
          * ============================================================
          */
         async function startProcess() {
-            // --- إذا كان هناك مفتاح مخزن، اسأل إذا كان يريد مفتاحاً جديداً ---
+            // --- Check cooldown ---
+            if (isCooldownActive()) {
+                showMessage(`⏳ Please wait ${formatCooldown(getRemainingTime())} before requesting another key.`, 'warning');
+                updateCooldownUI();
+                return;
+            }
+
+            // --- Check if already has a key (but allow new one after cooldown) ---
             if (sessionStorage.getItem('generated_key')) {
-                if (!confirm('You already have a key. Do you want a new one?')) {
-                    return;
-                }
+                // Don't show "Get New Key", just clear old key and continue
                 sessionStorage.removeItem('generated_key');
                 hideKey();
+                debugLog('🔄 Old key removed, generating new one...');
             }
 
             // --- Reset UI ---
@@ -596,14 +658,23 @@
 
                 // --- Handle success ---
                 if (data.success && data.key) {
+                    // ✅ Save key in sessionStorage (temporary, only for this session)
                     sessionStorage.setItem('generated_key', data.key);
+
+                    // ✅ Start 24-hour cooldown
+                    setCooldown();
+
+                    // ✅ Show key
                     showKey(data.key);
                     setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
                     showMessage('✅ Key generated successfully! Copy and use it.', 'success');
                     debugLog(`✅ Key generated: ${data.key}`);
 
-                    // --- Change button text ---
-                    setButton('Get New Key', false, 'fa-sync');
+                    // ✅ Keep button as "GET KEY" (no "Get New Key")
+                    setButton('GET KEY', false, 'fa-rocket');
+
+                    // --- Update cooldown timer ---
+                    updateCooldownUI();
 
                     // --- Clean URL ---
                     if (window.history && window.history.replaceState) {
@@ -635,24 +706,50 @@
         document.addEventListener('DOMContentLoaded', function() {
             debugLog('🚀 Page loaded.');
 
-            // --- Check for saved key ---
+            // --- Check cooldown first ---
+            const cooldownActive = updateCooldownUI();
+
+            // --- Check for saved key (only if not in cooldown) ---
             const savedKey = sessionStorage.getItem('generated_key');
-            if (savedKey) {
+
+            if (savedKey && !cooldownActive) {
+                // If there's a saved key and no cooldown, show it
                 showKey(savedKey);
                 setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
-                setButton('Get New Key', false, 'fa-sync');
-                debugLog(`📂 Loaded saved key: ${savedKey}`);
-            } else {
                 setButton('GET KEY', false, 'fa-rocket');
-                setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
+                debugLog(`📂 Loaded saved key: ${savedKey}`);
+            } else if (savedKey && cooldownActive) {
+                // If there's a saved key but cooldown is active, keep showing it
+                showKey(savedKey);
+                setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
+                setButton('GET KEY', false, 'fa-rocket');
+                debugLog(`📂 Loaded saved key with cooldown: ${savedKey}`);
+            } else {
+                // No saved key
+                setButton('GET KEY', false, 'fa-rocket');
+                if (!cooldownActive) {
+                    setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
+                }
                 debugLog('📂 No saved key found.');
             }
 
             // --- Handle return from shortener ---
             handleReturn();
+
+            // --- Cooldown timer update every second ---
+            if (isCooldownActive()) {
+                setInterval(() => {
+                    const active = updateCooldownUI();
+                    if (!active) {
+                        // Cooldown ended, enable button
+                        setButton('GET KEY', false, 'fa-rocket');
+                        setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
+                    }
+                }, 1000);
+            }
         });
 
-        // --- Expose copyKey to global scope (for onclick) ---
+        // --- Expose functions to global scope ---
         window.copyKey = copyKey;
         window.startProcess = startProcess;
     </script>
