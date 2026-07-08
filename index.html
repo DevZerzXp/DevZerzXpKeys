@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SX2TEAM - Key Generator</title>
+    <title>SX2-TEAM 5- Key Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             background: #0a0f0a;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -20,24 +15,22 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            background-image: radial-gradient(ellipse at 50% 0%, rgba(16, 185, 129, 0.06), transparent 60%);
+            background-image: radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.06), transparent 60%);
         }
-
         .container {
             max-width: 440px;
             width: 100%;
-            background: rgba(10, 15, 10, 0.96);
+            background: rgba(10,15,10,0.96);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border-radius: 32px;
             padding: 48px 36px;
-            border: 1px solid rgba(16, 185, 129, 0.08);
-            box-shadow: 0 48px 96px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(16, 185, 129, 0.03);
+            border: 1px solid rgba(16,185,129,0.08);
+            box-shadow: 0 48px 96px rgba(0,0,0,0.9), inset 0 1px 0 rgba(16,185,129,0.03);
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-
         .container::before {
             content: '';
             position: absolute;
@@ -45,38 +38,20 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(16, 185, 129, 0.02), transparent 50%);
+            background: radial-gradient(circle at 30% 20%, rgba(16,185,129,0.02), transparent 50%);
             pointer-events: none;
         }
-
-        .icon {
-            font-size: 56px;
-            color: #10b981;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        h1 {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        h1 span {
-            color: #10b981;
-            text-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
-        }
-
+        .icon { font-size: 56px; color: #10b981; margin-bottom: 12px; display: block; }
+        h1 { color: #fff; font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+        h1 span { color: #10b981; text-shadow: 0 0 40px rgba(16,185,129,0.15); }
         .sub {
-            color: rgba(255, 255, 255, 0.08);
+            color: rgba(255,255,255,0.08);
             font-size: 10px;
             letter-spacing: 5px;
             text-transform: uppercase;
             margin: 6px 0 28px 0;
             font-weight: 600;
         }
-
         .status-badge {
             display: inline-block;
             padding: 5px 18px;
@@ -86,54 +61,18 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
-            background: rgba(16, 185, 129, 0.05);
-            color: rgba(16, 185, 129, 0.4);
-            border: 1px solid rgba(16, 185, 129, 0.04);
+            background: rgba(16,185,129,0.05);
+            color: rgba(16,185,129,0.4);
+            border: 1px solid rgba(16,185,129,0.04);
             transition: all 0.4s ease;
         }
-
-        .status-badge.ready {
-            background: rgba(16, 185, 129, 0.05);
-            color: rgba(16, 185, 129, 0.4);
-            border-color: rgba(16, 185, 129, 0.04);
-        }
-
-        .status-badge.loading {
-            background: rgba(96, 165, 250, 0.06);
-            color: #60a5fa;
-            border-color: rgba(96, 165, 250, 0.08);
-        }
-
-        .status-badge.success {
-            background: rgba(16, 185, 129, 0.08);
-            color: #10b981;
-            border-color: rgba(16, 185, 129, 0.12);
-        }
-
-        .status-badge.error {
-            background: rgba(239, 68, 68, 0.06);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.08);
-        }
-
-        .status-badge.expired {
-            background: rgba(245, 158, 11, 0.06);
-            color: #f59e0b;
-            border-color: rgba(245, 158, 11, 0.08);
-        }
-
-        .status-badge.cooldown {
-            background: rgba(245, 158, 11, 0.06);
-            color: #f59e0b;
-            border-color: rgba(245, 158, 11, 0.08);
-        }
-        
-        .status-badge.blacklisted {
-            background: rgba(239, 68, 68, 0.12);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.15);
-        }
-
+        .status-badge.ready { background: rgba(16,185,129,0.05); color: rgba(16,185,129,0.4); border-color: rgba(16,185,129,0.04); }
+        .status-badge.loading { background: rgba(96,165,250,0.06); color: #60a5fa; border-color: rgba(96,165,250,0.08); }
+        .status-badge.success { background: rgba(16,185,129,0.08); color: #10b981; border-color: rgba(16,185,129,0.12); }
+        .status-badge.error { background: rgba(239,68,68,0.06); color: #ef4444; border-color: rgba(239,68,68,0.08); }
+        .status-badge.expired { background: rgba(245,158,11,0.06); color: #f59e0b; border-color: rgba(245,158,11,0.08); }
+        .status-badge.cooldown { background: rgba(245,158,11,0.06); color: #f59e0b; border-color: rgba(245,158,11,0.08); }
+        .status-badge.blacklisted { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.15); }
         .btn-generate {
             width: 100%;
             padding: 18px 24px;
@@ -149,78 +88,31 @@
             position: relative;
             overflow: hidden;
         }
-
-        .btn-generate:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 48px rgba(16, 185, 129, 0.25);
-        }
-
-        .btn-generate:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .btn-generate:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .btn-generate i {
-            margin-right: 8px;
-        }
-
-        .key-display {
-            display: none;
-            margin-top: 24px;
-            padding: 20px;
-            background: rgba(16, 185, 129, 0.02);
-            border: 2px solid rgba(16, 185, 129, 0.08);
-            border-radius: 16px;
-            animation: fadeSlideIn 0.5s ease;
-        }
-
-        .key-display.show {
-            display: block;
-        }
-
-        @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .key-display .label {
-            color: rgba(255, 255, 255, 0.12);
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            font-weight: 600;
-        }
-
+        .btn-generate:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 48px rgba(16,185,129,0.25); }
+        .btn-generate:active:not(:disabled) { transform: translateY(0); }
+        .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-generate i { margin-right: 8px; }
+        .key-display { display: none; margin-top: 24px; padding: 20px; background: rgba(16,185,129,0.02); border: 2px solid rgba(16,185,129,0.08); border-radius: 16px; animation: fadeSlideIn 0.5s ease; }
+        .key-display.show { display: block; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .key-display .label { color: rgba(255,255,255,0.12); font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; }
         .key-display .value {
             color: #10b981;
             font-size: 22px;
             font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
             margin: 12px 0 14px 0;
             padding: 14px 12px;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0,0,0,0.35);
             border-radius: 10px;
             letter-spacing: 1.5px;
             word-break: break-all;
-            border: 1px solid rgba(16, 185, 129, 0.04);
-            text-shadow: 0 0 30px rgba(16, 185, 129, 0.04);
+            border: 1px solid rgba(16,185,129,0.04);
+            text-shadow: 0 0 30px rgba(16,185,129,0.04);
         }
-
         .copy-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.25);
             padding: 8px 24px;
             border-radius: 8px;
             cursor: pointer;
@@ -229,20 +121,8 @@
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
         }
-
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.5);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        .key-hint {
-            margin-top: 12px;
-            color: rgba(255, 255, 255, 0.03);
-            font-size: 9px;
-            letter-spacing: 1px;
-        }
-
+        .copy-btn:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.06); }
+        .key-hint { margin-top: 12px; color: rgba(255,255,255,0.03); font-size: 9px; letter-spacing: 1px; }
         .message {
             margin-top: 16px;
             padding: 12px 16px;
@@ -251,66 +131,31 @@
             font-weight: 500;
             display: none;
         }
-
-        .message.show {
-            display: block;
-        }
-
-        .message.success {
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.04);
-            border: 1px solid rgba(16, 185, 129, 0.06);
-        }
-
-        .message.error {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.04);
-            border: 1px solid rgba(239, 68, 68, 0.06);
-        }
-
-        .message.info {
-            color: #60a5fa;
-            background: rgba(96, 165, 250, 0.04);
-            border: 1px solid rgba(96, 165, 250, 0.06);
-        }
-
-        .message.warning {
-            color: #f59e0b;
-            background: rgba(245, 158, 11, 0.04);
-            border: 1px solid rgba(245, 158, 11, 0.06);
-        }
-        
-        .message.blacklisted {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.12);
-        }
-
+        .message.show { display: block; }
+        .message.success { color: #10b981; background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.06); }
+        .message.error { color: #ef4444; background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.06); }
+        .message.info { color: #60a5fa; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.06); }
+        .message.warning { color: #f59e0b; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.06); }
+        .message.blacklisted { color: #ef4444; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.12); }
         .spinner {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255,255,255,0.08);
             border-top: 2px solid #10b981;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             vertical-align: middle;
             margin-right: 10px;
         }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
         .debug-box {
             margin-top: 16px;
             padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0,0,0,0.35);
             border-radius: 8px;
             font-size: 10px;
-            color: rgba(255, 255, 255, 0.08);
+            color: rgba(255,255,255,0.08);
             font-family: 'SF Mono', 'Consolas', monospace;
             text-align: left;
             display: none;
@@ -318,57 +163,23 @@
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.6;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255,255,255,0.02);
         }
-
-        .debug-box.show {
-            display: block;
-        }
-
-        .debug-box .line {
-            color: rgba(255, 255, 255, 0.06);
-        }
-
-        .footer {
-            margin-top: 28px;
-            color: rgba(255, 255, 255, 0.01);
-            font-size: 7px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-        }
-
-        .cooldown-timer {
-            margin-top: 12px;
-            color: rgba(255, 255, 255, 0.08);
-            font-size: 11px;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
+        .debug-box.show { display: block; }
+        .debug-box .line { color: rgba(255,255,255,0.06); }
+        .footer { margin-top: 28px; color: rgba(255,255,255,0.01); font-size: 7px; letter-spacing: 5px; text-transform: uppercase; }
+        .cooldown-timer { margin-top: 12px; color: rgba(255,255,255,0.08); font-size: 11px; font-weight: 300; letter-spacing: 1px; }
         @media (max-width: 480px) {
-            .container {
-                padding: 32px 20px;
-                border-radius: 24px;
-            }
-            h1 {
-                font-size: 22px;
-            }
-            .key-display .value {
-                font-size: 18px;
-                padding: 12px 10px;
-            }
-            .btn-generate {
-                font-size: 14px;
-                padding: 16px 20px;
-            }
+            .container { padding: 32px 20px; border-radius: 24px; }
+            h1 { font-size: 22px; }
+            .key-display .value { font-size: 18px; padding: 12px 10px; }
+            .btn-generate { font-size: 14px; padding: 16px 20px; }
         }
     </style>
 </head>
-
 <body>
 
     <div class="container">
-
         <span class="icon"><i class="fas fa-key"></i></span>
         <h1>SX2<span>TEAM</span></h1>
         <div class="sub">Key Generator</div>
@@ -391,13 +202,9 @@
         </div>
 
         <div class="cooldown-timer" id="cooldownTimer"></div>
-
         <div class="message" id="message"></div>
-
         <div class="debug-box" id="debugBox"></div>
-
         <div class="footer">SECURE · GREEN · SX2TEAM</div>
-
     </div>
 
     <script>
@@ -477,14 +284,11 @@
         function copyKey() {
             const key = keyValue.textContent;
             if (!key || key === 'SX2-TEAM-XXXXXX') return;
-
             navigator.clipboard.writeText(key)
                 .then(() => {
                     const btn = document.querySelector('.copy-btn');
                     btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => {
-                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy Key';
-                    }, 2000);
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy Key'; }, 2000);
                 })
                 .catch(() => {
                     const textarea = document.createElement('textarea');
@@ -495,9 +299,7 @@
                     textarea.remove();
                     const btn = document.querySelector('.copy-btn');
                     btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => {
-                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy Key';
-                    }, 2000);
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy Key'; }, 2000);
                 });
         }
 
@@ -506,9 +308,7 @@
          *  COOLDOWN SYSTEM (24 HOURS)
          * ============================================================
          */
-        function getCooldownKey() {
-            return 'cooldown_' + API_KEY;
-        }
+        function getCooldownKey() { return 'cooldown_' + API_KEY; }
 
         function getCooldownEnd() {
             const stored = localStorage.getItem(getCooldownKey());
@@ -616,7 +416,6 @@
          */
         async function clearCooldownIfNeeded() {
             const status = await checkIPStatus();
-            
             if (!status.active) {
                 localStorage.removeItem(getCooldownKey());
                 sessionStorage.removeItem('generated_key');
@@ -629,20 +428,20 @@
 
         /**
          * ============================================================
-         *  🔑 GET TEMP TOKEN (معدل - إرسال المفتاح في Body)
+         *  🔑 GET TEMP TOKEN (نفس الطريقة القديمة التي كانت تعمل)
          * ============================================================
          */
         async function getTempToken() {
             try {
                 debugLog('📤 Requesting temp token...');
                 
-                // ✅ إرسال المفتاح في Body بدلاً من Header
-                const formData = new FormData();
-                formData.append('api_key', API_KEY);
-                
+                // ✅ إرسال المفتاح كـ JSON (نفس الطريقة القديمة)
                 const response = await fetch(TOKEN_URL, {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ api_key: API_KEY })
                 });
 
                 const data = await response.json();
@@ -669,9 +468,7 @@
          * ============================================================
          */
         async function startProcess() {
-            // 🔥 الخطوة 0: التحقق من Blacklist (منع IP من الحصول على مفتاحين)
             const blacklistStatus = await checkBlacklist();
-            
             if (blacklistStatus.blacklisted) {
                 showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
                 setButton('Blocked', true, 'fa-ban');
@@ -680,9 +477,7 @@
                 return;
             }
 
-            // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
             const cooldownCleared = await clearCooldownIfNeeded();
-            
             if (cooldownCleared) {
                 updateCooldownUI();
                 setButton('GET KEY', false, 'fa-rocket');
@@ -691,28 +486,24 @@
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
             
-            // --- Check cooldown ---
             if (isCooldownActive()) {
                 showMessage(`⏳ Please wait ${formatCooldown(getRemainingTime())} before requesting another key.`, 'warning');
                 updateCooldownUI();
                 return;
             }
 
-            // --- Check if already has a key ---
             if (sessionStorage.getItem('generated_key')) {
                 sessionStorage.removeItem('generated_key');
                 hideKey();
                 debugLog('🔄 Old key removed, generating new one...');
             }
 
-            // --- Reset UI ---
             hideMessage();
             hideKey();
             setButton('Requesting token...', true, 'fa-spinner fa-spin');
             setStatus('<i class="fas fa-key"></i> Getting security token...', 'loading');
             debugLog('🚀 Starting process...');
 
-            // --- 🔑 Get temp token first ---
             const tempToken = await getTempToken();
             if (!tempToken) {
                 showMessage('❌ Failed to get security token. Please try again.', 'error');
@@ -721,15 +512,11 @@
                 return;
             }
 
-            // --- Save temp token ---
             sessionStorage.setItem('temp_token', tempToken);
             debugLog('🔐 Temp token saved.');
-
-            // --- Save state ---
             sessionStorage.setItem('waiting_for_return', 'true');
             sessionStorage.setItem('start_time', Date.now().toString());
 
-            // --- Build return URL ---
             const returnUrl = window.location.href.split('?')[0];
             const shortUrl = SHORT_URL + '?url=' + encodeURIComponent(returnUrl);
 
@@ -737,8 +524,6 @@
             setButton('Redirecting...', true, 'fa-spinner fa-spin');
             setStatus('<i class="fas fa-link"></i> Redirecting...', 'loading');
             showMessage('⏳ Redirecting to link shortener...', 'info');
-
-            // --- GO! ---
             window.location.href = shortUrl;
         }
 
@@ -754,7 +539,6 @@
 
             debugLog(`🔄 Checking return: waiting=${waiting}, elapsed=${now - startTime}ms`);
 
-            // --- Not waiting OR expired (5 min) ---
             if (waiting !== 'true') {
                 debugLog('ℹ️ Not waiting for return.');
                 return;
@@ -771,10 +555,8 @@
                 return;
             }
 
-            // --- Clear waiting state ---
             sessionStorage.removeItem('waiting_for_return');
 
-            // --- Get temp token and session ID ---
             const tempToken = sessionStorage.getItem('temp_token');
             const sessionId = sessionStorage.getItem('session_id');
             
@@ -788,19 +570,16 @@
             debugLog(`🔐 Using temp token: ${tempToken.substring(0, 20)}...`);
             debugLog(`🔐 Using session ID: ${sessionId.substring(0, 20)}...`);
 
-            // --- UI: Generating ---
             setButton('Generating...', true, 'fa-spinner fa-spin');
             setStatus('<i class="fas fa-cog"></i> Generating...', 'loading');
             showMessage('⏳ Generating your key...', 'info');
             debugLog('📤 Requesting key from API...');
 
             try {
-                // --- Build FormData ---
                 const formData = new FormData();
                 formData.append('action', 'generate');
                 formData.append('api_key', API_KEY);
 
-                // --- Send request with temp token and session ID ---
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -813,7 +592,6 @@
 
                 debugLog(`📥 Response status: ${response.status}`);
 
-                // --- Parse response ---
                 let data;
                 try {
                     data = await response.json();
@@ -825,37 +603,24 @@
 
                 debugLog(`📦 Data: ${JSON.stringify(data)}`);
 
-                // --- Handle success ---
                 if (data.success && data.key) {
-                    // ✅ Save key
                     sessionStorage.setItem('generated_key', data.key);
                     sessionStorage.removeItem('temp_token');
                     sessionStorage.removeItem('session_id');
 
-                    // ✅ Start 24-hour cooldown
                     setCooldown();
-
-                    // ✅ Show key
                     showKey(data.key);
                     setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
                     showMessage('✅ Key generated successfully! Copy and use it.', 'success');
                     debugLog(`✅ Key generated: ${data.key}`);
-
-                    // ✅ Button stays as "GET KEY"
                     setButton('GET KEY', false, 'fa-rocket');
-
-                    // --- Update cooldown timer ---
                     updateCooldownUI();
 
-                    // --- Clean URL ---
                     if (window.history && window.history.replaceState) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 } else {
-                    // --- Error from API ---
                     const errMsg = data.message || 'Unknown error';
-                    
-                    // 🔥 إذا كان الخطأ بسبب Blacklist، نظهر رسالة خاصة
                     if (errMsg.includes('blacklisted') || errMsg.includes('blocked')) {
                         setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
                         showMessage(`🚫 ${errMsg}`, 'blacklisted');
@@ -869,7 +634,6 @@
                 }
 
             } catch (error) {
-                // --- Network or parsing error ---
                 debugLog(`❌ Exception: ${error.message}`);
                 setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
                 showMessage(`❌ Connection error: ${error.message}`, 'error');
@@ -885,9 +649,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
             debugLog('🚀 Page loaded.');
 
-            // 🔥 الخطوة 0: التحقق من Blacklist
             const blacklistStatus = await checkBlacklist();
-            
             if (blacklistStatus.blacklisted) {
                 showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
                 setButton('Blocked', true, 'fa-ban');
@@ -896,13 +658,9 @@
                 return;
             }
 
-            // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
             await clearCooldownIfNeeded();
 
-            // --- Check cooldown ---
             const cooldownActive = updateCooldownUI();
-
-            // --- Check for saved key (only if not in cooldown) ---
             const savedKey = sessionStorage.getItem('generated_key');
 
             if (savedKey && !cooldownActive) {
@@ -923,10 +681,8 @@
                 debugLog('📂 No saved key found.');
             }
 
-            // --- Handle return from shortener ---
             handleReturn();
 
-            // --- Cooldown timer update every second ---
             if (isCooldownActive()) {
                 setInterval(() => {
                     const active = updateCooldownUI();
@@ -938,7 +694,6 @@
             }
         });
 
-        // --- Expose functions to global scope ---
         window.copyKey = copyKey;
         window.startProcess = startProcess;
     </script>
