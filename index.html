@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SX2TEAMX - Key Generator</title>
+    <title>SX2TEAM - Key Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -114,6 +114,7 @@
         .message.success { color: #10b981; background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.06); }
         .message.error { color: #ef4444; background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.06); }
         .message.info { color: #60a5fa; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.06); }
+        .message.warning { color: #f59e0b; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.06); }
         .footer { margin-top: 28px; color: rgba(255,255,255,0.02); font-size: 7px; letter-spacing: 4px; }
         .spinner {
             display: inline-block;
@@ -127,6 +128,19 @@
             margin-right: 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            background: rgba(16,185,129,0.06);
+            color: rgba(16,185,129,0.4);
+            border: 1px solid rgba(16,185,129,0.04);
+        }
     </style>
 </head>
 <body>
@@ -135,8 +149,12 @@
     <h1>SX2<span>TEAM</span></h1>
     <div class="sub">Key Generator</div>
     
-    <button class="btn-generate" id="generateBtn" onclick="generateKey()">
-        <i class="fas fa-rocket"></i> Generate Key
+    <div class="status-badge" id="statusBadge">
+        <i class="fas fa-shield-halved"></i> Ready
+    </div>
+    
+    <button class="btn-generate" id="generateBtn" onclick="startProcess()">
+        <i class="fas fa-rocket"></i> GET KEY
     </button>
     
     <div class="key-display" id="keyDisplay">
@@ -158,43 +176,67 @@
     const API_KEY = 'SX2TEAM-SECRET-2024';
     const SHORT_URL = 'https://short-jambo.ink/Sx2TeamGetKey';
     
-    async function generateKey() {
+    // 🔥 التحقق من حالة المستخدم
+    function checkStatus() {
+        // هل هناك مفتاح مخزن في sessionStorage؟
+        const savedKey = sessionStorage.getItem('generated_key');
+        if (savedKey) {
+            document.getElementById('keyValue').textContent = savedKey;
+            document.getElementById('keyDisplay').classList.add('show');
+            document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Key Ready';
+            document.getElementById('generateBtn').innerHTML = '<i class="fas fa-sync"></i> Get New Key';
+            return true;
+        }
+        return false;
+    }
+    
+    // 🚀 البدء
+    async function startProcess() {
         const btn = document.getElementById('generateBtn');
         const msg = document.getElementById('message');
         const keyDisplay = document.getElementById('keyDisplay');
-        const keyValue = document.getElementById('keyValue');
         
-        // تعطيل الزر
+        // إذا كان هناك مفتاح مخزن، نعطيه خيار الحصول على مفتاح جديد
+        if (sessionStorage.getItem('generated_key')) {
+            if (!confirm('You already have a key. Do you want a new one?')) {
+                return;
+            }
+            // حذف المفتاح القديم
+            sessionStorage.removeItem('generated_key');
+            keyDisplay.classList.remove('show');
+        }
+        
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Processing...';
+        btn.innerHTML = '<span class="spinner"></span> Redirecting...';
         msg.innerHTML = '';
         keyDisplay.classList.remove('show');
         
-        try {
-            showMessage('⏳ Redirecting to link shortener...', 'info');
-            
-            // 🚀 الخطوة 1: التوجيه إلى رابط الاختصار
-            // بعد الانتهاء، سيعود إلى هذه الصفحة مع ?token=XYZ
-            const returnUrl = window.location.href.split('?')[0] + '?token=generate';
-            const shortUrl = SHORT_URL + '?url=' + encodeURIComponent(returnUrl);
-            
-            // فتح الرابط في نفس النافذة
-            window.location.href = shortUrl;
-            
-        } catch (error) {
-            showMessage('❌ Connection error. Please try again.', 'error');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
-        }
+        // 🔥 حفظ حالة "في انتظار العودة"
+        sessionStorage.setItem('waiting_for_return', 'true');
+        sessionStorage.setItem('start_time', Date.now().toString());
+        
+        // بناء رابط العودة
+        const returnUrl = window.location.href.split('?')[0];
+        const shortUrl = SHORT_URL + '?url=' + encodeURIComponent(returnUrl);
+        
+        showMessage('⏳ Redirecting to link shortener...', 'info');
+        document.getElementById('statusBadge').innerHTML = '<i class="fas fa-link"></i> Redirecting...';
+        
+        // التوجيه إلى short-jambo.ink
+        window.location.href = shortUrl;
     }
     
-    // 🔥 الخطوة 2: معالجة العودة من الاختصار
+    // 🔥 معالجة العودة من الاختصار
     async function handleReturn() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
+        const waiting = sessionStorage.getItem('waiting_for_return');
+        const startTime = parseInt(sessionStorage.getItem('start_time') || '0');
+        const now = Date.now();
         
-        // إذا كان هناك توكن، نطلب توليد المفتاح
-        if (token) {
+        // إذا كان ينتظر العودة ولم يمر أكثر من 5 دقائق
+        if (waiting === 'true' && (now - startTime) < 300000) {
+            // إزالة حالة الانتظار
+            sessionStorage.removeItem('waiting_for_return');
+            
             const btn = document.getElementById('generateBtn');
             const msg = document.getElementById('message');
             const keyDisplay = document.getElementById('keyDisplay');
@@ -202,9 +244,10 @@
             
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Generating key...';
+            document.getElementById('statusBadge').innerHTML = '<i class="fas fa-cog"></i> Generating...';
             
             try {
-                // إرسال طلب توليد المفتاح
+                // طلب توليد المفتاح
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -217,21 +260,31 @@
                 const data = await response.json();
                 
                 if (data.success) {
+                    // 💾 حفظ المفتاح في sessionStorage
+                    sessionStorage.setItem('generated_key', data.key);
                     keyValue.textContent = data.key;
                     keyDisplay.classList.add('show');
+                    document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Key Ready';
                     showMessage('✅ Key generated successfully! Copy and use it.', 'success');
                     
-                    // إزالة التوكن من الرابط
+                    // إزالة أي معلمات من الرابط
                     window.history.replaceState({}, document.title, window.location.pathname);
                 } else {
                     showMessage('❌ ' + data.message, 'error');
+                    document.getElementById('statusBadge').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
                 }
             } catch (error) {
                 showMessage('❌ Connection error. Please try again.', 'error');
+                document.getElementById('statusBadge').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
             }
             
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
+            btn.innerHTML = '<i class="fas fa-rocket"></i> GET KEY';
+        } else if (waiting === 'true') {
+            // انتهت المدة
+            sessionStorage.removeItem('waiting_for_return');
+            showMessage('⏳ Session expired. Please try again.', 'warning');
+            document.getElementById('statusBadge').innerHTML = '<i class="fas fa-clock"></i> Expired';
         }
     }
     
@@ -252,9 +305,13 @@
         msg.className = 'message ' + type;
     }
     
-    // تشغيل عند تحميل الصفحة
+    // 🔥 عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
-        handleReturn();
+        // أولاً: التحقق من وجود مفتاح مخزن
+        if (!checkStatus()) {
+            // ثانياً: معالجة العودة من الاختصار
+            handleReturn();
+        }
     });
 </script>
 </body>
