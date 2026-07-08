@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SX2-TEAM 5- Key Generator</title>
+    <title>SX2TEAM - Key Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -434,14 +434,11 @@
         async function getTempToken() {
             try {
                 debugLog('📤 Requesting temp token...');
-                
-                // ✅ إرسال المفتاح كـ JSON (نفس الطريقة القديمة)
                 const response = await fetch(TOKEN_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ api_key: API_KEY })
+                        'X-API-Key': API_KEY
+                    }
                 });
 
                 const data = await response.json();
