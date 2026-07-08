@@ -629,17 +629,20 @@
 
         /**
          * ============================================================
-         *  🔑 GET TEMP TOKEN
+         *  🔑 GET TEMP TOKEN (معدل - إرسال المفتاح في Body)
          * ============================================================
          */
         async function getTempToken() {
             try {
                 debugLog('📤 Requesting temp token...');
+                
+                // ✅ إرسال المفتاح في Body بدلاً من Header
+                const formData = new FormData();
+                formData.append('api_key', API_KEY);
+                
                 const response = await fetch(TOKEN_URL, {
                     method: 'POST',
-                    headers: {
-                        'X-API-Key': API_KEY
-                    }
+                    body: formData
                 });
 
                 const data = await response.json();
