@@ -1,217 +1,218 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZerzBan X Cheats - مولد المفاتيح</title>
-    
-    <script>
-        // --- الآلية الصحيحة لمنع الحلقة ---
-        const STORAGE_KEY = 'zb_secure_token';
-        const SHORTLINK = 'https://short-jambo.ink/DevZerzGetKey';
-        const TOKEN_VALIDITY = 15000; // 15 ثانية
-
-        // 1. هل يوجد توكن سابق؟
-        const token = sessionStorage.getItem(STORAGE_KEY);
-        let accessGranted = false;
-
-        if (token) {
-            try {
-                const decoded = atob(token);
-                const timestamp = parseInt(decoded.split('_')[0]);
-                if (Date.now() - timestamp < TOKEN_VALIDITY) {
-                    accessGranted = true;
-                }
-            } catch(e) {
-                accessGranted = false;
-            }
-        }
-
-        // 2. إذا لم يكن هناك توكن صالح، نُنشئ توكنًا جديدًا ونوجهه فورًا
-        if (!accessGranted) {
-            // إنشاء توكن جديد (وقت + سلسلة عشوائية) وتخزينه
-            const newToken = btoa(Date.now() + '_' + Math.random().toString(36).substring(2));
-            sessionStorage.setItem(STORAGE_KEY, newToken);
-            // التوجيه للرابط المختصر
-            window.location.replace(SHORTLINK);
-            // نوقف تنفيذ أي شيء آخر
-            throw new Error('Redirecting...');
-        }
-
-        // 3. إذا كان التوكن صالحًا، نمسحه فورًا ونكمل
-        sessionStorage.removeItem(STORAGE_KEY);
-    </script>
-
+    <title>SX2TEAM - Key Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* نفس التصميم الأخضر السابق */
-        body { margin: 0; padding: 0; background-color: #030303; color: white; font-family: 'Courier New', Courier, monospace; text-align: center; overflow-x: hidden; }
-        #matrix-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.12; }
-        .content-wrapper { position: relative; z-index: 1; margin-top: 50px; display: flex; flex-direction: column; align-items: center; }
-        @keyframes cyber-glow-green {
-            0% { text-shadow: 0 0 10px #00ff00, 0 0 20px #005500; transform: scale(1); }
-            50% { text-shadow: 0 0 25px #33ff33, 0 0 50px #00ff00; transform: scale(1.02); }
-            100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #005500; transform: scale(1); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #0a0f0a;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.06), transparent 60%);
         }
-        h1 { color: #fff; font-size: 3em; font-weight: 900; animation: cyber-glow-green 2.5s infinite; margin-bottom: 30px; letter-spacing: 2px; }
-        .box-style { background: rgba(6, 6, 6, 0.9); border: 2px solid #00ff00; border-radius: 16px; box-shadow: 0 0 30px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.1); padding: 30px; width: 90%; max-width: 440px; }
-        .check-item { font-size: 16px; margin: 18px 0; color: #888; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(0, 255, 0, 0.2); padding-bottom: 10px; transition: all 0.5s; }
-        .check-item span.status { font-weight: bold; color: #33ff33; }
-        .check-item.success { color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.5); border-bottom-color: rgba(0,255,102,0.3); }
-        .check-item.success span.status { color: #00ff66; }
-        .countdown-container { font-size: 20px; margin: 20px 0; display: none; }
-        #timer { font-size: 55px; color: #00ff00; font-weight: bold; text-shadow: 0 0 20px #00ff00; margin-top: 10px; }
-        .key-box { display: none; margin-top: 25px; background: linear-gradient(135deg, #001000 0%, #002500 100%); border: 2px dashed #00ff00; position: relative; overflow: hidden; animation: neon-border-green 2s infinite alternate; }
-        @keyframes neon-border-green { from { box-shadow: 0 0 15px #00ff00; border-color: #00ff00; } to { box-shadow: 0 0 35px #33ff33; border-color: #66ff66; } }
-        #keyDisplay { font-size: 26px; font-weight: bold; color: #fff; letter-spacing: 3px; text-shadow: 0 0 20px #33ff33; word-break: break-all; }
-        .btn { background: linear-gradient(45deg, #003300, #00aa00); color: white; padding: 16px 40px; border: 1px solid #33ff33; border-radius: 30px; cursor: pointer; margin-top: 25px; font-size: 18px; font-weight: bold; transition: all 0.3s; box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); display: none; text-transform: uppercase; width: 90%; max-width: 440px; }
-        .btn:hover { background: linear-gradient(45deg, #00aa00, #33ff33); box-shadow: 0 0 35px #00ff00; transform: translateY(-3px); }
-        .info { color: #aaa; font-size: 14px; margin-top: 20px; display: none; line-height: 1.6; max-width: 400px; text-align: center; }
+        .container {
+            max-width: 440px;
+            width: 100%;
+            background: rgba(10,15,10,0.95);
+            backdrop-filter: blur(40px);
+            border-radius: 32px;
+            padding: 48px 40px;
+            border: 1px solid rgba(16,185,129,0.08);
+            box-shadow: 0 48px 96px rgba(0,0,0,0.9);
+            text-align: center;
+        }
+        .icon { font-size: 56px; color: #10b981; margin-bottom: 16px; }
+        h1 { color: #fff; font-size: 26px; font-weight: 700; }
+        h1 span { color: #10b981; }
+        .sub {
+            color: rgba(255,255,255,0.1);
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin: 6px 0 28px 0;
+        }
+        .btn-generate {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(16,185,129,0.25);
+        }
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .key-display {
+            display: none;
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(16,185,129,0.03);
+            border: 2px solid rgba(16,185,129,0.12);
+            border-radius: 16px;
+            animation: fadeIn 0.6s ease;
+        }
+        .key-display.show { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .key-display .label {
+            color: rgba(255,255,255,0.15);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .key-display .value {
+            color: #10b981;
+            font-size: 22px;
+            font-family: monospace;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            letter-spacing: 2px;
+            word-break: break-all;
+        }
+        .copy-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.3);
+            padding: 8px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        .message {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        .message.success { color: #10b981; background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.06); }
+        .message.error { color: #ef4444; background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.06); }
+        .message.warning { color: #f59e0b; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.06); }
+        .footer { margin-top: 28px; color: rgba(255,255,255,0.02); font-size: 7px; letter-spacing: 4px; }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top: 2px solid #10b981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <canvas id="matrix-bg"></canvas>
-    <div class="content-wrapper" id="mainContainer">
-        <h1>ZerzBan X Cheats</h1>
-        <div class="box-style" id="verificationBox">
-            <h3 style="text-align: center; color: #33ff33; margin-top: 0; letter-spacing: 1px;">🔐 جاري فحص جدار الحماية...</h3>
-            <div class="check-item" id="check1">التحقق من تخطي الرابط <span class="status">جاري الفحص...</span></div>
-            <div class="check-item" id="check2">فحص حظر اتصال VPN / Proxy <span class="status">جاري الفحص...</span></div>
-            <div class="check-item" id="check3">تشفير الجلسة الحالية <span class="status">جاري الفحص...</span></div>
+<div class="container">
+    <div class="icon"><i class="fas fa-key"></i></div>
+    <h1>SX2<span>TEAM</span></h1>
+    <div class="sub">Key Generator</div>
+    
+    <button class="btn-generate" id="generateBtn" onclick="generateKey()">
+        <i class="fas fa-rocket"></i> Generate Key
+    </button>
+    
+    <div class="key-display" id="keyDisplay">
+        <div class="label">🎯 Your Activation Key</div>
+        <div class="value" id="keyValue">SX2-TEAM-XXXXXX</div>
+        <button class="copy-btn" onclick="copyKey()"><i class="fas fa-copy"></i> Copy Key</button>
+        <div style="margin-top:12px; color:rgba(255,255,255,0.05); font-size:9px; letter-spacing:1px;">
+            Use this key in the app to activate your IP for 24 hours
         </div>
-        <div class="countdown-container" id="countdownBox">
-            <p style="color: #ccc;">جاري تشفير وتوليد مفتاحك الخاص...</p>
-            <div id="timer">10</div>
-        </div>
-        <div class="key-box box-style" id="keyContainer">
-            <span id="keyDisplay">جاري المعالجة...</span>
-        </div>
-        <button class="btn" id="copyBtn" onclick="copyKey()">📋 نسخ المفتاح</button>
-        <p class="info" id="infoText">المفتاح صالح للاستخدام مرة واحدة فقط في تطبيق ZerzBan X Cheats.</p>
     </div>
+    
+    <div id="message"></div>
+    
+    <div class="footer">SECURE · GREEN · SX2TEAM</div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
-        // تأثير الماتريكس
-        const canvas = document.getElementById('matrix-bg');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        const fontSize = 16; const columns = canvas.width / fontSize;
-        const drops = Array.from({length: columns}).fill(1);
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(3, 3, 3, 0.08)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff00'; ctx.font = fontSize + 'px Courier New';
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
-
-        // Firebase
-        const firebaseConfig = {
-            apiKey: 'AIzaSyB3a21LXNAl1k9Iayfax080VSOmILsNLG0',
-            authDomain: 'devzerzservers.firebaseapp.com',
-            databaseURL: 'https://devzerzservers-default-rtdb.firebaseio.com',
-            projectId: 'devzerzservers',
-            storageBucket: 'devzerzservers.firebasestorage.app',
-            messagingSenderId: '129983508495',
-            appId: '1:129983508495:web:c28de3950cbca105e4737a'
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // منع إعادة التوليد لاحقاً
-        if (localStorage.getItem('zb_key_generated')) {
-            document.getElementById('mainContainer').innerHTML = "<h2 style='color:#00ff00; text-shadow: 0 0 20px #00ff00;'>🚫 تم إيقاف العملية!</h2><p style='color:white; font-size:16px;'>لقد قمت بتوليد مفتاحك بالفعل.</p>";
-            document.getElementById('verificationBox')?.remove();
-        } else {
-            window.onload = runRealChecks;
-        }
-
-        async function runRealChecks() {
-            await new Promise(r => setTimeout(r, 1200));
-            setSuccess('check1', '✔️ تم التحقق من الرابط المختصر');
-            try {
-                let res = await fetch('https://ipapi.co/json/');
-                let data = await res.json();
-                if(data.security || data.org.toLowerCase().includes('vpn') || data.org.toLowerCase().includes('hosting')) {
-                    document.getElementById('verificationBox').innerHTML = "<h3 style='color:#ff0000;'>🚫 VPN نشط! أغلقه لإنشاء المفتاح.</h3>";
-                    return;
-                }
-                setSuccess('check2', '✔️ اتصال آمن (لا يوجد VPN)');
-            } catch(e) {
-                setSuccess('check2', '✔️ تم التحقق من الشبكة');
-            }
-            await new Promise(r => setTimeout(r, 1000));
-            setSuccess('check3', '✔️ جلسة مشفرة SSL/TLS');
-            await new Promise(r => setTimeout(r, 800));
-            document.getElementById('verificationBox').style.display = 'none';
-            document.getElementById('countdownBox').style.display = 'block';
-            startCountdown();
-        }
-
-        function setSuccess(id, text) {
-            const el = document.getElementById(id);
-            el.classList.add('success');
-            el.querySelector('.status').innerText = text;
-        }
-
-        function startCountdown() {
-            let count = 10;
-            const timerEl = document.getElementById('timer');
-            const interval = setInterval(() => {
-                count--;
-                timerEl.innerText = count;
-                if (count <= 0) {
-                    clearInterval(interval);
-                    generateAndSaveKey();
-                }
-            }, 1000);
-        }
-
-        function generateRandomString(length) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) result += chars[Math.floor(Math.random() * chars.length)];
-            return result;
-        }
-
-        function generateAndSaveKey() {
-            document.getElementById('countdownBox').style.display = 'none';
-            const generatedKey = 'ZerzBan-X-Cheats-' + generateRandomString(16);
-            database.ref('keys/' + generatedKey).set({
-                createdAt: Date.now(),
-                status: 'active',
-                used: false
-            }).then(() => {
-                document.getElementById('keyContainer').style.display = 'block';
-                document.getElementById('keyDisplay').innerText = generatedKey;
-                document.getElementById('copyBtn').style.display = 'block';
-                document.getElementById('infoText').style.display = 'block';
-                localStorage.setItem('zb_key_generated', 'true');
-            }).catch(() => {
-                document.getElementById('keyContainer').style.display = 'block';
-                document.getElementById('keyDisplay').innerText = 'فشل الاتصال! حاول لاحقاً.';
+<script>
+    // ⭐ رابط API (يوجد في سيرفرك)
+    const API_URL = 'https://sx2lador.xyz/api/generate.php';
+    // ⭐ المفتاح السري (يجب أن يكون مطابقاً لما في generate.php)
+    const API_KEY = 'SX2TEAM-ZERZYU776TUI876544RTYYHFCGHI875333RTYU88IPPLJHGZZZZZZ566Y-2024-XYZ123-ABCDEF';
+    
+    async function generateKey() {
+        const btn = document.getElementById('generateBtn');
+        const msg = document.getElementById('message');
+        const keyDisplay = document.getElementById('keyDisplay');
+        const keyValue = document.getElementById('keyValue');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Generating...';
+        msg.innerHTML = '';
+        keyDisplay.classList.remove('show');
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': API_KEY  // ⭐ إرسال المفتاح السري
+                },
+                body: JSON.stringify({ action: 'generate' })
             });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                keyValue.textContent = data.key;
+                keyDisplay.classList.add('show');
+                showMessage('✅ Key generated successfully! Copy and use it.', 'success');
+            } else {
+                showMessage('❌ ' + data.message, 'error');
+            }
+        } catch (error) {
+            showMessage('❌ Connection error. Please try again.', 'error');
         }
-
-        function copyKey() {
-            const key = document.getElementById('keyDisplay').innerText;
-            if (!key.includes('ZerzBan')) return;
-            navigator.clipboard.writeText(key);
-            const btn = document.getElementById('copyBtn');
-            btn.innerText = '✔️ تم النسخ';
-            btn.style.background = 'linear-gradient(45deg, #009933, #00ff66)';
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
+    }
+    
+    function copyKey() {
+        const key = document.getElementById('keyValue').textContent;
+        navigator.clipboard.writeText(key).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
             setTimeout(() => {
-                btn.innerText = '📋 نسخ المفتاح';
-                btn.style.background = 'linear-gradient(45deg, #003300, #00aa00)';
+                btn.innerHTML = '<i class="fas fa-copy"></i> Copy Key';
             }, 2000);
-        }
-    </script>
+        });
+    }
+    
+    function showMessage(text, type) {
+        const msg = document.getElementById('message');
+        msg.textContent = text;
+        msg.className = 'message ' + type;
+    }
+</script>
 </body>
 </html>
