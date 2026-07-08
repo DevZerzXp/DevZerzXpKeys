@@ -396,6 +396,7 @@
          */
         const API_URL = 'https://sx2lador.xyz/api/generate.php';
         const TOKEN_URL = 'https://sx2lador.xyz/api/get_token.php';
+        const CHECK_IP_URL = 'https://sx2lador.xyz/api/check_ip.php';
         const API_KEY = 'SX2TEAM-SECRET-2024-XYZ789-ABCDEF';
         const SHORT_URL = 'https://short-jambo.ink/Sx2TeamGetKey';
         const COOLDOWN_HOURS = 24;
@@ -551,6 +552,48 @@
 
         /**
          * ============================================================
+         *  🔥 التحقق من صلاحية IP (لإلغاء الـ Cooldown تلقائياً)
+         * ============================================================
+         */
+        async function checkIPStatus() {
+            try {
+                debugLog('📤 Checking IP status...');
+                const response = await fetch(CHECK_IP_URL, {
+                    method: 'GET',
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                });
+                const data = await response.json();
+                debugLog(`📦 IP status: ${data.active ? 'Active' : 'Not active'}`);
+                return data;
+            } catch (error) {
+                debugLog('⚠️ Failed to check IP status: ' + error.message);
+                return { active: true }; // في حالة الخطأ، نعتبره مفعل
+            }
+        }
+
+        /**
+         * ============================================================
+         *  🔥 دالة لمسح الـ Cooldown إذا كان IP غير مفعل
+         * ============================================================
+         */
+        async function clearCooldownIfNeeded() {
+            const status = await checkIPStatus();
+            
+            if (!status.active) {
+                // IP غير مفعل → نمسح الـ Cooldown
+                localStorage.removeItem(getCooldownKey());
+                sessionStorage.removeItem('generated_key');
+                hideKey();
+                debugLog('🔄 IP not active. Cooldown cleared.');
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * ============================================================
          *  🔑 GET TEMP TOKEN (للحماية)
          * ============================================================
          */
@@ -586,6 +629,19 @@
          * ============================================================
          */
         async function startProcess() {
+            // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
+            const cooldownCleared = await clearCooldownIfNeeded();
+            
+            // إذا تم مسح الـ Cooldown، نحدث واجهة المستخدم
+            if (cooldownCleared) {
+                updateCooldownUI();
+                setButton('GET KEY', false, 'fa-rocket');
+                setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
+                showMessage('✅ Your IP is not active. You can request a new key.', 'info');
+                // ننتظر قليلاً ثم نكمل
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
             // --- Check cooldown ---
             if (isCooldownActive()) {
                 showMessage(`⏳ Please wait ${formatCooldown(getRemainingTime())} before requesting another key.`, 'warning');
@@ -763,10 +819,13 @@
          *  INIT: On page load
          * ============================================================
          */
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             debugLog('🚀 Page loaded.');
 
-            // --- Check cooldown first ---
+            // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
+            await clearCooldownIfNeeded();
+
+            // --- Check cooldown ---
             const cooldownActive = updateCooldownUI();
 
             // --- Check for saved key (only if not in cooldown) ---
