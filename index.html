@@ -127,6 +127,12 @@
             color: #f59e0b;
             border-color: rgba(245, 158, 11, 0.08);
         }
+        
+        .status-badge.blacklisted {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.15);
+        }
 
         .btn-generate {
             width: 100%;
@@ -273,6 +279,12 @@
             background: rgba(245, 158, 11, 0.04);
             border: 1px solid rgba(245, 158, 11, 0.06);
         }
+        
+        .message.blacklisted {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.12);
+        }
 
         .spinner {
             display: inline-block;
@@ -397,6 +409,7 @@
         const API_URL = 'https://sx2lador.xyz/api/generate.php';
         const TOKEN_URL = 'https://sx2lador.xyz/api/get_token.php';
         const CHECK_IP_URL = 'https://sx2lador.xyz/api/check_ip.php';
+        const CHECK_BLACKLIST_URL = 'https://sx2lador.xyz/api/check_blacklist.php';
         const API_KEY = 'SX2TEAM-SECRET-2024-XYZ789-ABCDEF';
         const SHORT_URL = 'https://short-jambo.ink/Sx2TeamGetKey';
         const COOLDOWN_HOURS = 24;
@@ -552,7 +565,30 @@
 
         /**
          * ============================================================
-         *  🔥 التحقق من صلاحية IP (لإلغاء الـ Cooldown تلقائياً)
+         *  🔥 CHECK BLACKLIST (منع IP من الحصول على مفتاحين)
+         * ============================================================
+         */
+        async function checkBlacklist() {
+            try {
+                debugLog('📤 Checking blacklist status...');
+                const response = await fetch(CHECK_BLACKLIST_URL, {
+                    method: 'GET',
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                });
+                const data = await response.json();
+                debugLog(`📦 Blacklist status: ${data.blacklisted ? 'BLACKLISTED ❌' : 'Clean ✅'}`);
+                return data;
+            } catch (error) {
+                debugLog('⚠️ Failed to check blacklist: ' + error.message);
+                return { blacklisted: false };
+            }
+        }
+
+        /**
+         * ============================================================
+         *  🔥 CHECK IP STATUS
          * ============================================================
          */
         async function checkIPStatus() {
@@ -569,20 +605,19 @@
                 return data;
             } catch (error) {
                 debugLog('⚠️ Failed to check IP status: ' + error.message);
-                return { active: true }; // في حالة الخطأ، نعتبره مفعل
+                return { active: true };
             }
         }
 
         /**
          * ============================================================
-         *  🔥 دالة لمسح الـ Cooldown إذا كان IP غير مفعل
+         *  🔥 CLEAR COOLDOWN IF NEEDED
          * ============================================================
          */
         async function clearCooldownIfNeeded() {
             const status = await checkIPStatus();
             
             if (!status.active) {
-                // IP غير مفعل → نمسح الـ Cooldown
                 localStorage.removeItem(getCooldownKey());
                 sessionStorage.removeItem('generated_key');
                 hideKey();
@@ -594,7 +629,7 @@
 
         /**
          * ============================================================
-         *  🔑 GET TEMP TOKEN (للحماية)
+         *  🔑 GET TEMP TOKEN
          * ============================================================
          */
         async function getTempToken() {
@@ -611,7 +646,9 @@
                 debugLog(`📦 Token response: ${JSON.stringify(data)}`);
 
                 if (data.success && data.token) {
+                    sessionStorage.setItem('session_id', data.session_id);
                     debugLog(`✅ Temp token received: ${data.token.substring(0, 20)}...`);
+                    debugLog(`✅ Session ID: ${data.session_id.substring(0, 20)}...`);
                     return data.token;
                 } else {
                     debugLog(`❌ Failed to get token: ${data.message || 'Unknown error'}`);
@@ -629,16 +666,25 @@
          * ============================================================
          */
         async function startProcess() {
+            // 🔥 الخطوة 0: التحقق من Blacklist (منع IP من الحصول على مفتاحين)
+            const blacklistStatus = await checkBlacklist();
+            
+            if (blacklistStatus.blacklisted) {
+                showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
+                setButton('Blocked', true, 'fa-ban');
+                setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
+                debugLog('🚫 IP is blacklisted. Access denied.');
+                return;
+            }
+
             // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
             const cooldownCleared = await clearCooldownIfNeeded();
             
-            // إذا تم مسح الـ Cooldown، نحدث واجهة المستخدم
             if (cooldownCleared) {
                 updateCooldownUI();
                 setButton('GET KEY', false, 'fa-rocket');
                 setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
                 showMessage('✅ Your IP is not active. You can request a new key.', 'info');
-                // ننتظر قليلاً ثم نكمل
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
             
@@ -714,6 +760,7 @@
             if (now - startTime > 300000) {
                 sessionStorage.removeItem('waiting_for_return');
                 sessionStorage.removeItem('temp_token');
+                sessionStorage.removeItem('session_id');
                 setStatus('<i class="fas fa-clock"></i> Expired', 'expired');
                 showMessage('⏳ Session expired. Please try again.', 'warning');
                 debugLog('⏳ Session expired.');
@@ -724,16 +771,19 @@
             // --- Clear waiting state ---
             sessionStorage.removeItem('waiting_for_return');
 
-            // --- Get temp token ---
+            // --- Get temp token and session ID ---
             const tempToken = sessionStorage.getItem('temp_token');
-            if (!tempToken) {
-                showMessage('❌ Security token missing. Please try again.', 'error');
+            const sessionId = sessionStorage.getItem('session_id');
+            
+            if (!tempToken || !sessionId) {
+                showMessage('❌ Security data missing. Please try again.', 'error');
                 setButton('GET KEY', false, 'fa-rocket');
                 setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
                 return;
             }
 
             debugLog(`🔐 Using temp token: ${tempToken.substring(0, 20)}...`);
+            debugLog(`🔐 Using session ID: ${sessionId.substring(0, 20)}...`);
 
             // --- UI: Generating ---
             setButton('Generating...', true, 'fa-spinner fa-spin');
@@ -747,12 +797,13 @@
                 formData.append('action', 'generate');
                 formData.append('api_key', API_KEY);
 
-                // --- Send request with temp token ---
+                // --- Send request with temp token and session ID ---
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'X-API-Key': API_KEY,
-                        'X-Temp-Token': tempToken
+                        'X-Temp-Token': tempToken,
+                        'X-Session-ID': sessionId
                     },
                     body: formData
                 });
@@ -776,6 +827,7 @@
                     // ✅ Save key
                     sessionStorage.setItem('generated_key', data.key);
                     sessionStorage.removeItem('temp_token');
+                    sessionStorage.removeItem('session_id');
 
                     // ✅ Start 24-hour cooldown
                     setCooldown();
@@ -799,10 +851,18 @@
                 } else {
                     // --- Error from API ---
                     const errMsg = data.message || 'Unknown error';
-                    setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
-                    showMessage(`❌ ${errMsg}`, 'error');
+                    
+                    // 🔥 إذا كان الخطأ بسبب Blacklist، نظهر رسالة خاصة
+                    if (errMsg.includes('blacklisted') || errMsg.includes('blocked')) {
+                        setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
+                        showMessage(`🚫 ${errMsg}`, 'blacklisted');
+                        setButton('Blocked', true, 'fa-ban');
+                    } else {
+                        setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
+                        showMessage(`❌ ${errMsg}`, 'error');
+                        setButton('GET KEY', false, 'fa-rocket');
+                    }
                     debugLog(`❌ API error: ${errMsg}`);
-                    setButton('GET KEY', false, 'fa-rocket');
                 }
 
             } catch (error) {
@@ -821,6 +881,17 @@
          */
         document.addEventListener('DOMContentLoaded', async function() {
             debugLog('🚀 Page loaded.');
+
+            // 🔥 الخطوة 0: التحقق من Blacklist
+            const blacklistStatus = await checkBlacklist();
+            
+            if (blacklistStatus.blacklisted) {
+                showMessage('🚫 Your IP has been blacklisted for attempting to get multiple keys. This is permanent.', 'blacklisted');
+                setButton('Blocked', true, 'fa-ban');
+                setStatus('<i class="fas fa-ban"></i> Blacklisted', 'blacklisted');
+                debugLog('🚫 IP is blacklisted. Access denied.');
+                return;
+            }
 
             // 🔥 الخطوة 1: التحقق من صلاحية IP ومسح الـ Cooldown إذا لزم الأمر
             await clearCooldownIfNeeded();
