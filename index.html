@@ -395,7 +395,8 @@
          * ============================================================
          */
         const API_URL = 'https://sx2lador.xyz/api/generate.php';
-        const API_KEY = 'SX2TEAM-SECRET-2024';
+        const TOKEN_URL = 'https://sx2lador.xyz/api/get_token.php';
+        const API_KEY = 'SX2TEAM-SECRET-2024-XYZ789-ABCDEF';
         const SHORT_URL = 'https://short-jambo.ink/Sx2TeamGetKey';
         const COOLDOWN_HOURS = 24;
 
@@ -550,6 +551,37 @@
 
         /**
          * ============================================================
+         *  🔑 GET TEMP TOKEN (للحماية)
+         * ============================================================
+         */
+        async function getTempToken() {
+            try {
+                debugLog('📤 Requesting temp token...');
+                const response = await fetch(TOKEN_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                });
+
+                const data = await response.json();
+                debugLog(`📦 Token response: ${JSON.stringify(data)}`);
+
+                if (data.success && data.token) {
+                    debugLog(`✅ Temp token received: ${data.token.substring(0, 20)}...`);
+                    return data.token;
+                } else {
+                    debugLog(`❌ Failed to get token: ${data.message || 'Unknown error'}`);
+                    return null;
+                }
+            } catch (error) {
+                debugLog(`❌ Error getting temp token: ${error.message}`);
+                return null;
+            }
+        }
+
+        /**
+         * ============================================================
          *  MAIN: START PROCESS (GET KEY)
          * ============================================================
          */
@@ -561,9 +593,8 @@
                 return;
             }
 
-            // --- Check if already has a key (but allow new one after cooldown) ---
+            // --- Check if already has a key ---
             if (sessionStorage.getItem('generated_key')) {
-                // Don't show "Get New Key", just clear old key and continue
                 sessionStorage.removeItem('generated_key');
                 hideKey();
                 debugLog('🔄 Old key removed, generating new one...');
@@ -572,9 +603,22 @@
             // --- Reset UI ---
             hideMessage();
             hideKey();
-            setButton('Redirecting...', true, 'fa-spinner fa-spin');
-            setStatus('<i class="fas fa-link"></i> Redirecting...', 'loading');
+            setButton('Requesting token...', true, 'fa-spinner fa-spin');
+            setStatus('<i class="fas fa-key"></i> Getting security token...', 'loading');
             debugLog('🚀 Starting process...');
+
+            // --- 🔑 Get temp token first ---
+            const tempToken = await getTempToken();
+            if (!tempToken) {
+                showMessage('❌ Failed to get security token. Please try again.', 'error');
+                setButton('GET KEY', false, 'fa-rocket');
+                setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
+                return;
+            }
+
+            // --- Save temp token ---
+            sessionStorage.setItem('temp_token', tempToken);
+            debugLog('🔐 Temp token saved.');
 
             // --- Save state ---
             sessionStorage.setItem('waiting_for_return', 'true');
@@ -585,6 +629,8 @@
             const shortUrl = SHORT_URL + '?url=' + encodeURIComponent(returnUrl);
 
             debugLog('🔗 Redirecting to: ' + shortUrl);
+            setButton('Redirecting...', true, 'fa-spinner fa-spin');
+            setStatus('<i class="fas fa-link"></i> Redirecting...', 'loading');
             showMessage('⏳ Redirecting to link shortener...', 'info');
 
             // --- GO! ---
@@ -611,6 +657,7 @@
 
             if (now - startTime > 300000) {
                 sessionStorage.removeItem('waiting_for_return');
+                sessionStorage.removeItem('temp_token');
                 setStatus('<i class="fas fa-clock"></i> Expired', 'expired');
                 showMessage('⏳ Session expired. Please try again.', 'warning');
                 debugLog('⏳ Session expired.');
@@ -620,6 +667,17 @@
 
             // --- Clear waiting state ---
             sessionStorage.removeItem('waiting_for_return');
+
+            // --- Get temp token ---
+            const tempToken = sessionStorage.getItem('temp_token');
+            if (!tempToken) {
+                showMessage('❌ Security token missing. Please try again.', 'error');
+                setButton('GET KEY', false, 'fa-rocket');
+                setStatus('<i class="fas fa-exclamation-triangle"></i> Error', 'error');
+                return;
+            }
+
+            debugLog(`🔐 Using temp token: ${tempToken.substring(0, 20)}...`);
 
             // --- UI: Generating ---
             setButton('Generating...', true, 'fa-spinner fa-spin');
@@ -633,11 +691,12 @@
                 formData.append('action', 'generate');
                 formData.append('api_key', API_KEY);
 
-                // --- Send request ---
+                // --- Send request with temp token ---
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'X-API-Key': API_KEY
+                        'X-API-Key': API_KEY,
+                        'X-Temp-Token': tempToken
                     },
                     body: formData
                 });
@@ -658,8 +717,9 @@
 
                 // --- Handle success ---
                 if (data.success && data.key) {
-                    // ✅ Save key in sessionStorage (temporary, only for this session)
+                    // ✅ Save key
                     sessionStorage.setItem('generated_key', data.key);
+                    sessionStorage.removeItem('temp_token');
 
                     // ✅ Start 24-hour cooldown
                     setCooldown();
@@ -670,7 +730,7 @@
                     showMessage('✅ Key generated successfully! Copy and use it.', 'success');
                     debugLog(`✅ Key generated: ${data.key}`);
 
-                    // ✅ Keep button as "GET KEY" (no "Get New Key")
+                    // ✅ Button stays as "GET KEY"
                     setButton('GET KEY', false, 'fa-rocket');
 
                     // --- Update cooldown timer ---
@@ -713,19 +773,16 @@
             const savedKey = sessionStorage.getItem('generated_key');
 
             if (savedKey && !cooldownActive) {
-                // If there's a saved key and no cooldown, show it
                 showKey(savedKey);
                 setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
                 setButton('GET KEY', false, 'fa-rocket');
                 debugLog(`📂 Loaded saved key: ${savedKey}`);
             } else if (savedKey && cooldownActive) {
-                // If there's a saved key but cooldown is active, keep showing it
                 showKey(savedKey);
                 setStatus('<i class="fas fa-check-circle"></i> Key Ready', 'success');
                 setButton('GET KEY', false, 'fa-rocket');
                 debugLog(`📂 Loaded saved key with cooldown: ${savedKey}`);
             } else {
-                // No saved key
                 setButton('GET KEY', false, 'fa-rocket');
                 if (!cooldownActive) {
                     setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
@@ -741,7 +798,6 @@
                 setInterval(() => {
                     const active = updateCooldownUI();
                     if (!active) {
-                        // Cooldown ended, enable button
                         setButton('GET KEY', false, 'fa-rocket');
                         setStatus('<i class="fas fa-shield-halved"></i> Ready', 'ready');
                     }
