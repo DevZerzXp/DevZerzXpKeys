@@ -113,7 +113,7 @@
         }
         .message.success { color: #10b981; background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.06); }
         .message.error { color: #ef4444; background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.06); }
-        .message.warning { color: #f59e0b; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.06); }
+        .message.info { color: #60a5fa; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.06); }
         .footer { margin-top: 28px; color: rgba(255,255,255,0.02); font-size: 7px; letter-spacing: 4px; }
         .spinner {
             display: inline-block;
@@ -144,7 +144,7 @@
         <div class="value" id="keyValue">SX2-TEAM-XXXXXX</div>
         <button class="copy-btn" onclick="copyKey()"><i class="fas fa-copy"></i> Copy Key</button>
         <div style="margin-top:12px; color:rgba(255,255,255,0.05); font-size:9px; letter-spacing:1px;">
-            Use this key in the app to activate your IP for 24 hours
+            Use this key in the app to activate your IP
         </div>
     </div>
     
@@ -154,10 +154,9 @@
 </div>
 
 <script>
-    // ⭐ رابط API (يوجد في سيرفرك)
     const API_URL = 'https://sx2lador.xyz/api/generate.php';
-    // ⭐ المفتاح السري (يجب أن يكون مطابقاً لما في generate.php)
-    const API_KEY = 'SX2TEAM-ZERZYU776TUI876544RTYYHFCGHI875333RTYU88IPPLJHGZZZZZZ566Y-2024-XYZ123-ABCDEF';
+    const API_KEY = 'SX2TEAM-SECRET-2024';
+    const SHORT_URL = 'https://short-jambo.ink/Sx2GetKey';
     
     async function generateKey() {
         const btn = document.getElementById('generateBtn');
@@ -165,36 +164,75 @@
         const keyDisplay = document.getElementById('keyDisplay');
         const keyValue = document.getElementById('keyValue');
         
+        // تعطيل الزر
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Generating...';
+        btn.innerHTML = '<span class="spinner"></span> Processing...';
         msg.innerHTML = '';
         keyDisplay.classList.remove('show');
         
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': API_KEY  // ⭐ إرسال المفتاح السري
-                },
-                body: JSON.stringify({ action: 'generate' })
-            });
+            showMessage('⏳ Redirecting to link shortener...', 'info');
             
-            const data = await response.json();
+            // 🚀 الخطوة 1: التوجيه إلى رابط الاختصار
+            // بعد الانتهاء، سيعود إلى هذه الصفحة مع ?token=XYZ
+            const returnUrl = window.location.href.split('?')[0] + '?token=generate';
+            const shortUrl = SHORT_URL + '?url=' + encodeURIComponent(returnUrl);
             
-            if (data.success) {
-                keyValue.textContent = data.key;
-                keyDisplay.classList.add('show');
-                showMessage('✅ Key generated successfully! Copy and use it.', 'success');
-            } else {
-                showMessage('❌ ' + data.message, 'error');
-            }
+            // فتح الرابط في نفس النافذة
+            window.location.href = shortUrl;
+            
         } catch (error) {
             showMessage('❌ Connection error. Please try again.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
         }
+    }
+    
+    // 🔥 الخطوة 2: معالجة العودة من الاختصار
+    async function handleReturn() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
         
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
+        // إذا كان هناك توكن، نطلب توليد المفتاح
+        if (token) {
+            const btn = document.getElementById('generateBtn');
+            const msg = document.getElementById('message');
+            const keyDisplay = document.getElementById('keyDisplay');
+            const keyValue = document.getElementById('keyValue');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Generating key...';
+            
+            try {
+                // إرسال طلب توليد المفتاح
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify({ action: 'generate' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    keyValue.textContent = data.key;
+                    keyDisplay.classList.add('show');
+                    showMessage('✅ Key generated successfully! Copy and use it.', 'success');
+                    
+                    // إزالة التوكن من الرابط
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Connection error. Please try again.', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Key';
+        }
     }
     
     function copyKey() {
@@ -213,6 +251,11 @@
         msg.textContent = text;
         msg.className = 'message ' + type;
     }
+    
+    // تشغيل عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        handleReturn();
+    });
 </script>
 </body>
 </html>
